@@ -47,7 +47,9 @@ const getDetailInforDoctor = (inputId) => {
 };
 
 const saveBulkScheduleDoctor = (data) => {
-  return axios.post(`/api/bulk-create-schedule`, data);
+  return axios.post(`/api/bulk-create-schedule`, data, {
+    headers: authHeader(),
+  });
 };
 
 const getScheduleDoctorByDate = (doctorId, date) => {

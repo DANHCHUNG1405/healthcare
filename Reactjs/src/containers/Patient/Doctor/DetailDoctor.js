@@ -10,6 +10,7 @@ class DetailDoctor extends Component {
     super(props);
     this.state = {
       detailDoctor: {},
+      currentDoctorId: -1,
     };
   }
 
@@ -35,6 +36,7 @@ class DetailDoctor extends Component {
   componentDidUpdate() {}
 
   render() {
+    console.log("chung check state: ", this.state);
     let { language } = this.props;
     let { detailDoctor, messages, doctorIsOnline } = this.state;
     let nameVi = "",
@@ -72,25 +74,21 @@ class DetailDoctor extends Component {
           </div>
           <div className="schedule-doctor">
             <div className="content-left">
-              <DoctorSchedule
-                doctorIdParent={
-                  detailDoctor && detailDoctor.id ? detailDoctor.id : -1
-                }
-              />
+              <DoctorSchedule doctorIdFromParent={this.state.currentDoctorId} />
             </div>
             <div className="content-right"></div>
           </div>
-        </div>
-        <div className="detail-infor-doctor">
-          {detailDoctor &&
-            detailDoctor.Markdown &&
-            detailDoctor.Markdown.contentHTML && (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: detailDoctor.Markdown.contentHTML,
-                }}
-              ></div>
-            )}
+          <div className="detail-infor-doctor">
+            {detailDoctor &&
+              detailDoctor.Markdown &&
+              detailDoctor.Markdown.contentHTML && (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: detailDoctor.Markdown.contentHTML,
+                  }}
+                ></div>
+              )}
+          </div>
         </div>
       </>
     );

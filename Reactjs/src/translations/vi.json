@@ -27,7 +27,7 @@
       "manage-doctor": "Quản lý bác sĩ",
       "manage-admin": "Quản lý admin",
       "crud": "CRUD user",
-      "crud-redux": "CRUD Redux",
+      "crud-redux": "Quản lý người dùng",
       "clinic": "Phòng khám",
       "manage-clinic": "Quản lý phòng khám",
       "specialty": "Chuyên khoa",
