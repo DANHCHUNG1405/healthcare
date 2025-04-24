@@ -150,6 +150,8 @@ let getDetailDoctorById = (inputId) => {
 let bulkCreateSchedule = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("check data: ", data);
+
       if (!data.arrSchedule || !data.doctorId || !data.formatedDate) {
         resolve({
           errCode: 1,
@@ -157,25 +159,40 @@ let bulkCreateSchedule = (data) => {
         });
       } else {
         let schedule = data.arrSchedule;
+
+        // Gán maxNumber và chuyển date từ timestamp => Date object
         if (schedule && schedule.length > 0) {
           schedule = schedule.map((item) => {
             item.maxNumber = MAX_NUMBER_SCHEDULE;
+            item.date = new Date(+item.date).toISOString().split("T")[0]; // ✅ sửa lại dòng này
             return item;
           });
         }
+
+        // Lấy các lịch đã tồn tại từ DB
         let existing = await db.Schedule.findAll({
           where: { doctorId: data.doctorId, date: data.formatedDate },
           attributes: ["timeType", "date", "doctorId", "maxNumber"],
         });
-        //compare difference
+
+        // Convert date từ DB thành timestamp để so sánh
+        if (existing && existing.length > 0) {
+          existing = existing.map((item) => {
+            item.date = new Date(item.date).getTime();
+            return item;
+          });
+        }
+
+        // Tìm các lịch chưa tồn tại để tạo mới
         let toCreate = _.differenceWith(schedule, existing, (a, b) => {
           return a.timeType === b.timeType && +a.date === +b.date;
         });
 
-        //create data
+        // Lưu các lịch mới
         if (toCreate && toCreate.length > 0) {
           await db.Schedule.bulkCreate(toCreate);
         }
+
         resolve({
           errCode: 0,
           errMessage: "OK",
@@ -186,8 +203,15 @@ let bulkCreateSchedule = (data) => {
     }
   });
 };
+
 let getScheduleByDate = (doctorId, date) => {
   return new Promise(async (resolve, reject) => {
+    console.log(
+      "Querying schedule for doctorId:",
+      doctorId,
+      "on date:",
+      new Date(+date).toISOString().split("T")[0]
+    );
     try {
       if (!doctorId || !date) {
         resolve({
@@ -198,7 +222,7 @@ let getScheduleByDate = (doctorId, date) => {
         let dataSchedule = await db.Schedule.findAll({
           where: {
             doctorId: doctorId,
-            date: date,
+            date: new Date(+date).toISOString().split("T")[0], // ✅ Truy vấn đúng theo định dạng DB lưu
           },
           include: [
             {
