@@ -125,9 +125,9 @@ let getListPatientForDoctor = async (req, res) => {
   }
 };
 
-let sendRemedy = async (req, res) => {
+let getDoctorInfoById = async (req, res) => {
   try {
-    let infor = await doctorService.sendRemedy(req.body);
+    let infor = await doctorService.getDoctorInfoById(req.query.doctorId);
     return res.status(200).json(infor);
   } catch (error) {
     console.log(error);
@@ -137,10 +137,9 @@ let sendRemedy = async (req, res) => {
     });
   }
 };
-
-let getDoctorInfoById = async (req, res) => {
+let sendRemedy = async (req, res) => {
   try {
-    let infor = await doctorService.getDoctorInfoById(req.query.doctorId);
+    let infor = await doctorService.sendRemedy(req.body);
     return res.status(200).json(infor);
   } catch (error) {
     console.log(error);
