@@ -72,24 +72,24 @@ export const doctorMenu = [
     //quản lý kế hoạch của bác sĩ
     name: "menu.admin.manage-user",
     menus: [
-      // {
-      //   // name: 'menu.doctor.manage-schedule', link: '/system/user-manage'
-      //   name: "menu.doctor.manage-schedule",
-      //   link: "/doctor/manage-schedule",
-      //   // { name: 'menu.system.system-parameter.header', link: '/system/system-parameter' },
-      // },
+      {
+        // name: 'menu.doctor.manage-schedule', link: '/system/user-manage'
+        name: "menu.doctor.manage-schedule",
+        link: "/doctor/manage-schedule",
+        // { name: 'menu.system.system-parameter.header', link: '/system/system-parameter' },
+      },
       {
         name: "menu.doctor.manage-patient",
         link: "/doctor/manage-patient",
       },
-      {
-        name: "menu.admin.manage-wallet",
-        link: "/system/manage-wallet",
-      },
-      {
-        name: "menu.doctor.manage-live-chat",
-        link: "/doctor/live-chat",
-      },
+      // {
+      //   name: "menu.admin.manage-wallet",
+      //   link: "/system/manage-wallet",
+      // },
+      // {
+      //   name: "menu.doctor.manage-live-chat",
+      //   link: "/doctor/live-chat",
+      // },
     ],
   },
 ];

@@ -71,9 +71,7 @@
         &.active {
           opacity: 1;
 
-          span {
-            color: orange;
-          }
+          color: orange;
         }
 
         &:hover {
@@ -89,9 +87,7 @@
         &.active {
           opacity: 1;
 
-          span {
-            color: blue;
-          }
+          color: blue;
         }
 
         &:hover {

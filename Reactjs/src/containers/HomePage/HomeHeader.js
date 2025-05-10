@@ -8,28 +8,25 @@ import { languages, LANGUAGES } from "../../utils";
 import { changeLanguageApp } from "../../store/actions";
 import { withRouter } from "react-router";
 class HomeHeader extends Component {
-  changeLanguage = (languages) => {
-    this.props.changeLanguageAppRedux(languages);
+  changeLanguage = (language) => {
+    this.props.changeLanguageAppRedux(language);
   };
   returnToHome = () => {
     if (this.props.history) {
-      this.props.history.push(`/home`);
+      this.props.history.push("/home");
     }
   };
   render() {
-    let language = (language) => {
-      this.props.changeLanguageAppRedux(language);
-    };
-    console.log("check language", language);
+    let language = this.props.language;
     return (
-      <>
+      <React.Fragment>
         <div className="home-header-container">
           <div className="home-header-content">
             <div className="left-content">
-              <i class="fas fa-bars"></i>
+              <i className="fas fa-bars"></i>
               <img
                 className="header-logo"
-                src={logo1}
+                src={logo}
                 onClick={() => this.returnToHome()}
               />
             </div>
@@ -37,41 +34,41 @@ class HomeHeader extends Component {
               <div className="child-content">
                 <div>
                   <b>
-                    <FormattedMessage id="homeheader.speciality"></FormattedMessage>
+                    <FormattedMessage id="homeheader.speciality" />
                   </b>
                 </div>
                 <div className="subs-title">
-                  <FormattedMessage id="homeheader.searchdoctor"></FormattedMessage>
+                  <FormattedMessage id="homeheader.searchdoctor" />
                 </div>
               </div>
               <div className="child-content">
                 <div>
                   <b>
-                    <FormattedMessage id="homeheader.health-facility"></FormattedMessage>
+                    <FormattedMessage id="homeheader.health-facility" />
                   </b>
                 </div>
                 <div className="subs-title">
-                  <FormattedMessage id="homeheader.select-room"></FormattedMessage>
+                  <FormattedMessage id="homeheader.select-room" />
                 </div>
               </div>
               <div className="child-content">
                 <div>
                   <b>
-                    <FormattedMessage id="homeheader.doctor"></FormattedMessage>
+                    <FormattedMessage id="homeheader.doctor" />
                   </b>
                 </div>
-                <div className="subs-title">
-                  <FormattedMessage id="homeheader.select-doctor"></FormattedMessage>
+                <div>
+                  <FormattedMessage id="homeheader.select-doctor" />
                 </div>
               </div>
               <div className="child-content">
                 <div>
                   <b>
-                    <FormattedMessage id="homeheader.fee"></FormattedMessage>
+                    <FormattedMessage id="homeheader.fee" />
                   </b>
                 </div>
                 <div className="subs-title">
-                  <FormattedMessage id="homeheader.check-health"></FormattedMessage>
+                  <FormattedMessage id="homeheader.check-health" />
                 </div>
               </div>
             </div>
@@ -105,7 +102,7 @@ class HomeHeader extends Component {
             </div>
           </div>
         </div>
-        {this.props.isShowBanner === true && (
+        {this.props.isShowBanner == true && (
           <div className="home-header-banner">
             <div className="content-up">
               <div className="title1">
@@ -147,7 +144,7 @@ class HomeHeader extends Component {
                 </div>
                 <div className="option-child">
                   <div className="icon-child">
-                    <i className="fas fa-vial"></i>
+                    <i className="fas fa-flask"></i>
                   </div>
                   <div className="text-child">
                     <FormattedMessage id="banner.child4" />
@@ -173,7 +170,7 @@ class HomeHeader extends Component {
             </div>
           </div>
         )}
-      </>
+      </React.Fragment>
     );
   }
 }
@@ -181,8 +178,8 @@ class HomeHeader extends Component {
 const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.user.isLoggedIn,
-    userInfo: state.user.userInfo,
     language: state.app.language,
+    userInfor: state.user.userInfo,
   };
 };
 
@@ -192,4 +189,6 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeHeader);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(HomeHeader)
+);
