@@ -69,8 +69,8 @@ class ManageSchedule extends Component {
   };
 
   handleOnchangeDatePicker = (date) => {
-    this.setState({
-      currentDate: date[0],
+    this.setState({ currentDate: date[0] }, () => {
+      console.log("Ngày đã chọn sau khi setState: ", this.state.currentDate); // Sau khi thay đổi
     });
   };
 
@@ -99,10 +99,11 @@ class ManageSchedule extends Component {
       return;
     }
 
-    let formatedDate = new Date(currentDate).getTime();
+    // Chuyển đổi currentDate thành chuỗi định dạng 'YYYY-MM-DD'
+    let formatedDate = moment(currentDate).format("YYYY-MM-DD");
 
-    if (formatedDate === "Invalid date") {
-      toast.error("Invalid date!");
+    if (!formatedDate || formatedDate === "Invalid date") {
+      toast.error("Invalid date format!");
       return;
     }
 
@@ -112,7 +113,7 @@ class ManageSchedule extends Component {
         selectedTime.map((schedule, index) => {
           let object = {};
           object.doctorId = selectedDoctor.value;
-          object.date = formatedDate;
+          object.date = formatedDate; // Gửi ngày dưới dạng chuỗi
           object.timeType = schedule.keyMap;
           result.push(object);
         });
@@ -125,7 +126,7 @@ class ManageSchedule extends Component {
     let res = await saveBulkScheduleDoctor({
       arrSchedule: result,
       doctorId: selectedDoctor.value,
-      formatedDate: formatedDate,
+      formatedDate: formatedDate, // Gửi formatedDate dưới dạng chuỗi
     });
 
     if (res && res.errCode === 0) {
@@ -140,7 +141,7 @@ class ManageSchedule extends Component {
     let { language } = this.props;
     // Sử dụng ngày hôm nay làm minDate
     let today = new Date();
-
+    console.log("Component rendered, currentDate: ", this.state.currentDate);
     return (
       <div className="manage-schedule-container">
         <div className="m-s-title">
