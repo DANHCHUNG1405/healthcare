@@ -74,6 +74,7 @@ class DoctorSchedule extends Component {
         }
       }
       object.value = moment(new Date()).add(i, "days").startOf("day").valueOf();
+      // object.value = moment.utc().add(i, "days").format("YYYY-MM-DD");
       allDays.push(object);
     }
     return allDays;

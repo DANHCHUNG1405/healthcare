@@ -29,8 +29,8 @@ class ManagePatient extends Component {
   getDataPatient = async () => {
     let { user } = this.props;
     let { currentDate } = this.state;
-    let formatedDate = new Date(currentDate).getTime();
-    console.log("CALL API with:", user.id, formatedDate);
+    let formatedDate = moment(currentDate).format("YYYY-MM-DD");
+    console.log("Sending date to backend:", formatedDate);
     let res = await getAllPatientForDoctor({
       doctorId: user.id,
       date: formatedDate,
