@@ -429,6 +429,9 @@ let checkRequiredFields = (inputData) => {
   }
   return { isValid, element };
 };
+
+const moment = require("moment");
+
 let getListPatientForDoctor = (doctorId, date) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -438,11 +441,13 @@ let getListPatientForDoctor = (doctorId, date) => {
           errMessage: "Missing required parameters",
         });
       } else {
+        let formattedDate = moment(date).format("YYYY-MM-DD");
+
         let data = await db.Booking.findAll({
           where: {
-            statusId: "S2",
+            statusId: "S1",
             doctorId: doctorId,
-            date: date,
+            date: formattedDate,
           },
           include: [
             {
@@ -466,6 +471,7 @@ let getListPatientForDoctor = (doctorId, date) => {
           raw: false,
           nest: true,
         });
+
         resolve({
           errCode: 0,
           data: data,
@@ -476,6 +482,7 @@ let getListPatientForDoctor = (doctorId, date) => {
     }
   });
 };
+
 let sendRemedy = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
