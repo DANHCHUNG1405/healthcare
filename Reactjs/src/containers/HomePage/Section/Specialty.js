@@ -4,7 +4,6 @@ import "./Specialty.scss";
 import { FormattedMessage } from "react-intl";
 import Slider from "react-slick";
 import { getAllSpecialty } from "../../../services/userService";
-import specialtyImg from "../../../assets/specialty/co-xuong-khop.jpg";
 import { withRouter } from "react-router";
 
 class Specialty extends Component {
@@ -35,7 +34,10 @@ class Specialty extends Component {
             <span className="title-section">
               <FormattedMessage id="homepage.specialty-popular" />
             </span>
-            <button className="btn-section">
+            <button
+              className="btn-section"
+              onClick={() => this.props.history.push("/all-specialty")}
+            >
               <FormattedMessage id="homepage.more-infor" />
             </button>
           </div>

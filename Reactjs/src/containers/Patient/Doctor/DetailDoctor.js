@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import HomeHeader from "../../../containers/HomePage/HomeHeader";
+import HomeHeader from "../../HomePage/HomeHeader";
 import "./DetailDoctor.scss";
 import { getDetailInforDoctor } from "../../../services/userService";
 import { LANGUAGES } from "../../../utils";
@@ -37,7 +37,6 @@ class DetailDoctor extends Component {
   componentDidUpdate() {}
 
   render() {
-    console.log("chung check state: ", this.state);
     let { language } = this.props;
     let { detailDoctor, messages, doctorIsOnline } = this.state;
     let nameVi = "",

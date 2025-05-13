@@ -23,15 +23,17 @@ class About extends Component {
           </div>
           <div className="content-right">
             <p>
-              RegExr was created by gskinner.com. Edit the Expression & Text to
-              see matches. Roll over matches or the expression for details. PCRE
-              & JavaScript flavors of RegEx are supported. Validate your
-              expression with Tests mode. The side bar includes a Cheatsheet,
-              full Reference, and Help. You can also Save & Share with the
-              Community and view patterns you create or favorite in My Patterns.
-              Explore results with the Tools below. Replace & List output custom
-              results. Details lists capture groups. Explain describes your
-              expression in plain English.
+              HealthCare is a medical appointment booking app that helps
+              patients easily schedule consultations with doctors online. With
+              HealthCare, users can search for doctors by specialty, view
+              detailed profiles, and book appointments based on real-time
+              availability. The app sends instant booking confirmations and
+              reminders to ensure patients never miss an appointment. For
+              clinics, HealthCare simplifies doctor schedule management and
+              reduces patient wait times. Designed with a user-friendly
+              interface and strong data security, HealthCare enhances the
+              overall healthcare experience for both patients and medical
+              professionals.
             </p>
           </div>
         </div>

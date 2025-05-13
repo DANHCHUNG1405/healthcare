@@ -104,13 +104,6 @@ const getAllPatientForDoctor = (data) => {
   );
 };
 const postSendRemedy = (data) => {
-  // const formData = new FormData();
-  // for (let key in data) {
-  //     // console.log("🚀 ~ file: userService.js:94 ~ postSendRemedy ~ data.key", data[key])
-  //     formData.append(key, data[key]);
-  // }
-  // console.log("🚀 ~ file: userService.js:93 ~ postSendRemedy ~ formData", formData)
-
   return axios.post(`/api/send-remedy`, data, { headers: authHeader() });
 };
 const getDoctorInfoById = (data) => {

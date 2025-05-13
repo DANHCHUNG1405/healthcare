@@ -113,10 +113,6 @@ class DetailSpecialty extends Component {
   };
   render() {
     let { arrDoctorId, dataDetailSpecialty, listProvince } = this.state;
-    console.log(
-      "🚀 ~ file: detailSpecialty.js:50 ~ DetailSpecialty ~ render ~ dataDetailSpecialty",
-      dataDetailSpecialty
-    );
     let { language } = this.props;
     return (
       <>
