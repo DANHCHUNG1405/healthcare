@@ -1,6 +1,7 @@
 import db from "../models/index";
 import emailService from "./emailService";
 import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
 require("dotenv").config();
 
 const buildUrlEmail = (doctorId, token) => {
@@ -25,14 +26,7 @@ let postBookAppointment = (data) => {
         });
       } else {
         let token = uuidv4();
-        await emailService.sendSimpleEmail({
-          receiverEmail: data.email,
-          patientName: data.fullName,
-          time: data.timeString,
-          doctorName: data.doctorName,
-          language: data.language,
-          redirectLink: buildUrlEmail(data.doctorId, token),
-        });
+
         let user = await db.User.findOrCreate({
           where: {
             email: data.email,
@@ -46,17 +40,49 @@ let postBookAppointment = (data) => {
           },
         });
         if (user && user[0]) {
-          await db.Booking.findOrCreate({
-            where: { patientId: user[0].id },
-            defaults: {
+          // Kiểm tra lịch chưa khám
+          let existingBooking = await db.Booking.findOne({
+            where: {
+              patientId: user[0].id,
+              doctorId: data.doctorId,
+              statusId: ["S1", "S2"],
+            },
+          });
+
+          if (existingBooking) {
+            resolve({
+              errCode: 2,
+              errMessage:
+                "Bạn đã có lịch hẹn với bác sĩ này chưa khám. Vui lòng chờ hoàn tất trước khi đặt lịch mới.",
+            });
+          } else {
+            await db.Booking.create({
               statusId: "S1",
               doctorId: data.doctorId,
               patientId: user[0].id,
               date: data.date,
               timeType: data.timeType,
               token: token,
-            },
-          });
+            });
+
+            let timeString = "";
+            let timeTypeData = await db.Allcode.findOne({
+              where: { keyMap: data.timeType, type: "TIME" },
+            });
+            if (timeTypeData) {
+              let dateFormatted = moment(data.date).format("dddd - DD/MM/YYYY"); // Hoặc bạn tùy chỉnh theo yêu cầu
+              timeString = `${timeTypeData.valueVi} - ${dateFormatted}`;
+            }
+
+            await emailService.sendSimpleEmail({
+              receiverEmail: data.email,
+              patientName: data.fullName,
+              time: timeString,
+              doctorName: data.doctorName,
+              language: data.language,
+              redirectLink: buildUrlEmail(data.doctorId, token),
+            });
+          }
         }
         resolve({
           errCode: 0,
@@ -109,8 +135,57 @@ const postVerifyBookAppointment = async (data) => {
     };
   }
 };
+let getBookingHistoryByEmail = async (email) => {
+  try {
+    if (!email) {
+      return {
+        errCode: 1,
+        errMessage: "Missing email parameter!",
+      };
+    }
 
+    let user = await db.User.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return {
+        errCode: 2,
+        errMessage: "User not found!",
+      };
+    }
+
+    let bookings = await db.Booking.findAll({
+      where: { patientId: String(user.id) },
+      include: [
+        {
+          model: db.User,
+          as: "doctorData", // bác sĩ
+          attributes: ["firstName", "lastName"],
+        },
+        {
+          model: db.Allcode,
+          as: "timeTypeDataPatient", // chú ý alias đúng
+          attributes: ["valueVi", "valueEn"],
+        },
+      ],
+      order: [["date", "DESC"]],
+      raw: false,
+    });
+    return {
+      errCode: 0,
+      data: bookings,
+    };
+  } catch (e) {
+    console.error("Error in getBookingHistoryByEmail:", e);
+    return {
+      errCode: -1,
+      errMessage: "Server error",
+    };
+  }
+};
 module.exports = {
   postBookAppointment,
   postVerifyBookAppointment,
+  getBookingHistoryByEmail,
 };

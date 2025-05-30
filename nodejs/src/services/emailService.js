@@ -4,23 +4,20 @@ import { encode } from "html-entities";
 
 let sendSimpleEmail = async (dataSend) => {
   console.log("Data to send email:", dataSend);
-  // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
-      user: process.env.EMAIL_APP, // generated ethereal user
-      pass: process.env.EMAIL_APP_PASSWORD, // generated ethereal password
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
     },
   });
 
-  // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: `"HealthCare 👻" <${process.env.EMAIL_APP}>`, // sender address
-    to: dataSend.receiverEmail, // list of receivers
-    subject: "Thông tin đặt lịch khám bệnh", // Subject line
-    // html: getBodyHTMLEmail(dataSend),
+    from: `"HealthCare 👻" <${process.env.EMAIL_APP}>`,
+    to: dataSend.receiverEmail,
+    subject: "Thông tin đặt lịch khám bệnh",
     html: getBodyHTMLEmail(dataSend),
   });
 };
@@ -30,85 +27,88 @@ let getBodyHTMLEmail = (dataSend) => {
   patientName = encode(patientName);
   time = encode(time);
   doctorName = encode(doctorName);
+
   let result = "";
   if (dataSend.language === "vi") {
     result = `
-        <h3>Xin chào ${patientName}</h3>
-        <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
-        <p>Thông tin đặt lịch khám bệnh:</p>
-        <div><b>Thời gian: ${time}</b></div>
-        <div><b>Bác sĩ: ${doctorName}</b></div>
+      <h3>Xin chào ${patientName}</h3>
+      <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
+      <p>Thông tin đặt lịch khám bệnh:</p>
+      <div><b>Thời gian: ${time}</b></div>
+      <div><b>Bác sĩ: ${doctorName}</b></div>
 
-        <p>Nếu các thông tin trên là đúng sự thật, vui lòng click vào đường link bên dưới để xác nhận
-        và hoàn tất thủ tục đặt lịch khám bệnh.</p>
-        <div>
-        <a href=${dataSend.redirectLink} target="_blank">Click here</a>
-        </div>
+      <p>Nếu các thông tin trên là đúng sự thật, vui lòng click vào đường link bên dưới để xác nhận
+      và hoàn tất thủ tục đặt lịch khám bệnh.</p>
+      <div>
+      <a href=${dataSend.redirectLink} target="_blank">Click here</a>
+      </div>
 
-        <div>Xin chân thành cảm ơn!</div>
-        `;
+      <div>Xin chân thành cảm ơn!</div>
+    `;
   }
   if (dataSend.language === "en") {
     result = `
-        <h3>Dear ${patientName}</h3>
-        <p>You received this email because you booked an online medical appointment on HealthCare</p>
-        <p>Information to book a medical appointment:</p>
-        <div><b>Time: ${time}</b></div>
-        <div><b>Doctor: ${doctorName}</b></div>
+      <h3>Dear ${patientName}</h3>
+      <p>You received this email because you booked an online medical appointment on HealthCare</p>
+      <p>Information to book a medical appointment:</p>
+      <div><b>Time: ${time}</b></div>
+      <div><b>Doctor: ${doctorName}</b></div>
 
-        <p>If the above information is true, please click on the link below to confirm and complete the procedure to book an appointment.</p>
-        <div>
-        <a href=${dataSend.redirectLink} target="_blank">Click here</a>
-        </div>
+      <p>If the above information is true, please click on the link below to confirm and complete the procedure to book an appointment.</p>
+      <div>
+      <a href=${dataSend.redirectLink} target="_blank">Click here</a>
+      </div>
 
-        <div>Sincerely thank!</div>
-        `;
+      <div>Sincerely thank!</div>
+    `;
   }
   return result;
 };
 
 let getBodyHTMLEmailRemedy = (dataSend) => {
-  let { patientName } = dataSend;
+  let { patientName, diagnosis } = dataSend;
   patientName = encode(patientName);
+  diagnosis = encode(diagnosis || "");
+
   let result = "";
   if (dataSend.language === "vi") {
     result = `
-        <h3>Xin chào ${patientName}!</h3>
-        <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
-        <p>Thông tin đơn thuốc/hóa đơn được gửi trong file đính kèm</p>
+      <h3>Xin chào ${patientName}!</h3>
+      <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
+      <p>Thông tin đơn thuốc/hóa đơn được gửi trong file đính kèm</p>
+      <p><b>Chẩn đoán:</b> ${diagnosis}</p>
 
-        <div>Xin chân thành cảm ơn!</div>
-        `;
+      <div>Xin chân thành cảm ơn!</div>
+    `;
   }
   if (dataSend.language === "en") {
     result = `
-        <h3>Dear ${patientName}!</h3>
-        <p>You received this email because you booked an online medical appointment on HealthCare</p>
-        <p>Prescription/invoice information is sent in the attached file</p>
+      <h3>Dear ${patientName}!</h3>
+      <p>You received this email because you booked an online medical appointment on HealthCare</p>
+      <p>Prescription/invoice information is sent in the attached file</p>
+      <p><b>Diagnosis:</b> ${diagnosis}</p>
 
-        <div>Sincerely thank!</div>
-        `;
+      <div>Sincerely thank!</div>
+    `;
   }
   return result;
 };
 
 let sendAttachment = async (dataSend) => {
-  // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
-      user: process.env.EMAIL_APP, // generated ethereal user
-      pass: process.env.EMAIL_APP_PASSWORD, // generated ethereal password
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
     },
   });
 
-  // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: `"HealthCare 👻" <${process.env.EMAIL_APP}>`, // sender address
-    to: dataSend.email, // list of receivers
-    subject: "Kết quả đặt lịch khám bệnh", // Subject line
+    from: `"HealthCare 👻" <${process.env.EMAIL_APP}>`,
+    to: dataSend.email,
+    subject: "Kết quả đặt lịch khám bệnh",
     html: getBodyHTMLEmailRemedy(dataSend),
     attachments: [
       {
@@ -124,21 +124,21 @@ let getBodyHTMLEmailConfirm = (dataSend) => {
   let result = "";
   if (dataSend.language === "vi") {
     result = `
-        <h3>Xin chào ${dataSend.patientName}!</h3>
-        <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
-        <p>Bạn vui lòng click vào đường link bên dưới để xác nhận email và tiếp tục thủ tục đang ký</p>
-        <a href=${dataSend.redirectLink} target="_blank">Xác nhận địa chỉ email</a>
-        <div>Xin chân thành cảm ơn!</div>
-        `;
+      <h3>Xin chào ${dataSend.patientName}!</h3>
+      <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
+      <p>Bạn vui lòng click vào đường link bên dưới để xác nhận email và tiếp tục thủ tục đang ký</p>
+      <a href=${dataSend.redirectLink} target="_blank">Xác nhận địa chỉ email</a>
+      <div>Xin chân thành cảm ơn!</div>
+    `;
   }
   if (dataSend.language === "en") {
     result = `
-        <h3>Dear ${dataSend.patientName}!</h3>
-        <p>You received this email because you booked an online medical appointment on HealthCare</p>
-        <p>please click on the link below to verify your email and continue the registration process.</p>
-        <a href=${dataSend.redirectLink} target="_blank">Verify email</a>
-        <div>Sincerely thank!</div>
-        `;
+      <h3>Dear ${dataSend.patientName}!</h3>
+      <p>You received this email because you booked an online medical appointment on HealthCare</p>
+      <p>Please click on the link below to verify your email and continue the registration process.</p>
+      <a href=${dataSend.redirectLink} target="_blank">Verify email</a>
+      <div>Sincerely thank!</div>
+    `;
   }
   return result;
 };

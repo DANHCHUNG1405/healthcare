@@ -25,78 +25,21 @@ let postVerifyBookAppointment = async (req, res) => {
     });
   }
 };
-
-let getDetailBillByToken = async (req, res) => {
+let getBookingHistoryByEmail = async (req, res) => {
   try {
-    let infor = await patientService.getDetailBillByToken(req.query.token);
-    return res.status(200).json(infor);
-  } catch (error) {
-    console.log(error);
-    return res.status(200).json({
+    let email = req.query.email;
+    let result = await patientService.getBookingHistoryByEmail(email);
+    return res.status(200).json(result);
+  } catch (e) {
+    console.error("Error in controller getBookingHistoryByEmail:", e);
+    return res.status(500).json({
       errCode: -1,
-      errMessage: "Error from the server",
+      errMessage: "Internal server error",
     });
   }
 };
-
-let verifyPayment = async (req, res) => {
-  try {
-    let infor = await patientService.verifyPayment(req.body);
-    return res.status(200).json(infor);
-  } catch (error) {
-    console.log(error);
-    return res.status(200).json({
-      errCode: -1,
-      errMessage: "Error from the server",
-    });
-  }
-};
-
-let getContractAbi = async (req, res) => {
-  try {
-    let infor = await patientService.getContractAbi();
-    return res.status(200).json(infor);
-  } catch (error) {
-    console.log(error);
-    return res.status(200).json({
-      errCode: -1,
-      errMessage: "Error from the server",
-    });
-  }
-};
-
-let transfer = async (req, res) => {
-  try {
-    let infor = await patientService.transfer(req.body);
-    return res.status(200).json(infor);
-  } catch (error) {
-    console.log(error);
-    return res.status(200).json({
-      errCode: -1,
-      errMessage: "Error from the server",
-    });
-  }
-};
-
-let initBill = async (req, res) => {
-  try {
-    let infor = await patientService.initBill(req.body);
-    return res.status(200).json(infor);
-  } catch (error) {
-    console.log(error);
-    return res.status(200).json({
-      errCode: -1,
-      errMessage: "Error from the server",
-    });
-  }
-};
-
 module.exports = {
   postBookAppointment: postBookAppointment,
   postVerifyBookAppointment: postVerifyBookAppointment,
-  getDetailBillByToken: getDetailBillByToken,
-  verifyPayment: verifyPayment,
-  getContractAbi: getContractAbi,
-  transfer: transfer,
-  initBill: initBill,
+  getBookingHistoryByEmail: getBookingHistoryByEmail,
 };
