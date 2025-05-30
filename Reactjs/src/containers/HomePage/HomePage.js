@@ -5,7 +5,7 @@ import Speacialty from "./Section/Specialty";
 import MedicalFacility from "./Section/MedicalFacility";
 import OutStandingDoctor from "./Section/OutStandingDoctor";
 import HandBook from "./Section/HandBook";
-import HomeFooter from "./Homefooter";
+import HomeFooter from "./HomeFooter";
 import About from "./Section/About";
 import "./HomePage.scss";
 import "slick-carousel/slick/slick.css";

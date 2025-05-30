@@ -1,38 +1,82 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./HomeHeader.scss";
-import logo from "../../assets/logo.svg";
-import logo1 from "../../assets/download.jpg";
+import logo from "../../assets/logo.PNG";
 import { FormattedMessage } from "react-intl";
-import { languages, LANGUAGES } from "../../utils";
+import { LANGUAGES } from "../../utils";
 import { changeLanguageApp } from "../../store/actions";
 import { withRouter } from "react-router";
+
 class HomeHeader extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      placeholderIndex: 0,
+      placeholderTexts: [
+        "Tìm kiếm chuyên khoa",
+        "Tìm kiếm cơ sở y tế",
+        "Tìm kiếm bác sĩ",
+      ],
+    };
+  }
+
+  componentDidMount() {
+    this.placeholderInterval = setInterval(() => {
+      this.setState((prevState) => ({
+        placeholderIndex:
+          (prevState.placeholderIndex + 1) % prevState.placeholderTexts.length,
+      }));
+    }, 3000);
+  }
+
+  componentWillUnmount() {
+    if (this.placeholderInterval) {
+      clearInterval(this.placeholderInterval);
+    }
+  }
+
   changeLanguage = (language) => {
     this.props.changeLanguageAppRedux(language);
   };
+
   returnToHome = () => {
     if (this.props.history) {
       this.props.history.push("/home");
     }
   };
+
   handleViewDoctor = () => {
     if (this.props.history) {
       this.props.history.push("/all-doctors");
     }
   };
+
   handleViewSpecialty = () => {
     if (this.props.history) {
       this.props.history.push("/all-specialty");
     }
   };
+
   handleViewClinic = () => {
     if (this.props.history) {
       this.props.history.push("/all-clinic");
     }
   };
+  handleSearchClick = () => {
+    if (this.props.history) {
+      this.props.history.push("/search");
+    }
+  };
+  handleViewBookingHistory = () => {
+    if (this.props.history) {
+      this.props.history.push("/booking-history");
+    }
+  };
+
   render() {
-    let language = this.props.language;
+    let { language } = this.props;
+    let { placeholderIndex, placeholderTexts } = this.state;
+
     return (
       <React.Fragment>
         <div className="home-header-container">
@@ -43,6 +87,7 @@ class HomeHeader extends Component {
                 className="header-logo"
                 src={logo}
                 onClick={() => this.returnToHome()}
+                alt="logo"
               />
             </div>
             <div className="center-content">
@@ -85,21 +130,11 @@ class HomeHeader extends Component {
                   <FormattedMessage id="homeheader.select-doctor" />
                 </div>
               </div>
-              {/* <div className="child-content">
-                <div>
-                  <b>
-                    <FormattedMessage id="homeheader.fee" />
-                  </b>
-                </div>
-                <div className="subs-title">
-                  <FormattedMessage id="homeheader.check-health" />
-                </div>
-              </div> */}
             </div>
             <div className="right-content">
-              <div className="support">
+              <div className="history" onClick={this.handleViewBookingHistory}>
                 <i className="fas fa-question-circle"></i>
-                <FormattedMessage id="homeheader.support" />
+                Lịch hẹn
               </div>
               <div
                 className={
@@ -126,7 +161,8 @@ class HomeHeader extends Component {
             </div>
           </div>
         </div>
-        {this.props.isShowBanner == true && (
+
+        {this.props.isShowBanner === true && (
           <div className="home-header-banner">
             <div className="content-up">
               <div className="title1">
@@ -135,62 +171,16 @@ class HomeHeader extends Component {
               <div className="title2">
                 <FormattedMessage id="banner.title2" />
               </div>
-              <div className="search">
+              <div className="search" onClick={this.handleSearchClick}>
                 <i className="fas fa-search"></i>
-                <input type="text" placeholder="Tìm kiếm" />
+                <input
+                  type="text"
+                  placeholder={placeholderTexts[placeholderIndex]}
+                />
               </div>
             </div>
             <div className="content-down">
-              {/* <div className="options">
-                <div className="option-child">
-                  <div className="icon-child">
-                    <i className="far fa-hospital"></i>
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child1" />
-                  </div>
-                </div>
-                <div className="option-child">
-                  <div className="icon-child">
-                    <i className="fas fa-mobile-alt"></i>
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child2" />
-                  </div>
-                </div>
-                <div className="option-child">
-                  <div className="icon-child">
-                    <i className="fas fa-procedures"></i>
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child3" />
-                  </div>
-                </div>
-                <div className="option-child">
-                  <div className="icon-child">
-                    <i className="fas fa-flask"></i>
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child4" />
-                  </div>
-                </div>
-                <div className="option-child">
-                  <div className="icon-child">
-                    <i className="fas fa-user-md"></i>
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child5" />
-                  </div>
-                </div>
-                <div className="option-child">
-                  <div className="icon-child">
-                    <i className="fas fa-briefcase-medical"></i>
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child6" />
-                  </div>
-                </div>
-              </div> */}
+              {/* Nội dung banner content-down nếu cần */}
             </div>
           </div>
         )}

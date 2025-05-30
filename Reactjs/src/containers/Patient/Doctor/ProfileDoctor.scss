@@ -19,6 +19,8 @@
 
       .up {
         font-weight: 600;
+        white-space: nowrap; // ❌ Không cho xuống dòng
+        max-width: 800px;
       }
 
       .down {

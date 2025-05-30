@@ -1,0 +1,160 @@
+.search-list-container {
+  padding: 30px;
+
+  .search-bar {
+    background-color: #fdd800;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 16px;
+      margin-left: 10px;
+      color: black;
+    }
+
+    i {
+      color: black;
+    }
+
+    .dropdown-filter {
+      position: relative;
+      margin-left: 15px;
+      padding-left: 15px;
+      border-left: 1px solid rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      color: black;
+
+      .selected {
+        margin-right: 5px;
+        font-size: 15px;
+      }
+
+      .dropdown-icon {
+        font-size: 12px;
+      }
+
+      .options {
+        position: absolute;
+        bottom: -5px;
+        right: 0;
+        transform: translateY(100%);
+        background: #fdd800;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+        min-width: 220px;
+
+        .option {
+          padding: 12px 18px;
+          cursor: pointer;
+          font-size: 15px;
+          color: black;
+
+          &:hover {
+            background-color: #ffe135;
+          }
+        }
+      }
+    }
+  }
+
+  .search-section {
+    margin: 30px 0;
+
+    .section-title {
+      background-color: #f2f2f2;
+      padding: 10px 15px;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .list-items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      .list-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+
+        img {
+          width: 30px;
+          height: 30px;
+          object-fit: contain;
+          margin-right: 12px;
+        }
+
+        span {
+          font-size: 15px;
+        }
+
+        &:hover {
+          background-color: #f9f9f9;
+          cursor: pointer;
+        }
+
+        // 🌟 Bổ sung style riêng cho ProfileDoctor
+        .profile-doctor-container {
+          display: flex;
+          align-items: center;
+          width: 100%;
+
+          .intro-doctor {
+            display: flex;
+            align-items: center;
+
+            .content-left {
+              width: 40px;
+              height: 40px;
+              margin-right: 12px;
+
+              .doctor-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+              }
+            }
+
+            .content-right {
+              display: flex;
+              flex-direction: column;
+
+              .doctor-name {
+                font-size: 15px;
+                font-weight: 600;
+                color: #333;
+              }
+
+              .doctor-description {
+                font-size: 13px;
+                color: #666;
+                margin-top: 4px;
+              }
+            }
+          }
+
+          .view-detail-doctor {
+            margin-left: auto;
+            font-size: 13px;
+            color: #0071ba;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

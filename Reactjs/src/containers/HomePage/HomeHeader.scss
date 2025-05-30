@@ -53,7 +53,7 @@
       justify-content: flex-end;
       align-items: center;
 
-      .support {
+      .history {
         padding-right: 50px;
         display: flex;
         align-items: center;
@@ -146,9 +146,10 @@
       padding: 10px;
       border-radius: 25px;
       background-color: #f7d800;
-
+      cursor: pointer;
       i {
         margin: 0 5px;
+        cursor: pointer;
       }
 
       input {
@@ -157,6 +158,7 @@
         background: transparent;
         border: none;
         outline: none;
+        cursor: pointer;
       }
     }
   }

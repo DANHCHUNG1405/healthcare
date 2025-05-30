@@ -104,6 +104,7 @@ const getAllPatientForDoctor = (data) => {
   );
 };
 const postSendRemedy = (data) => {
+  console.log("Data gửi lên server:", data);
   return axios.post(`/api/send-remedy`, data, { headers: authHeader() });
 };
 const getDoctorInfoById = (data) => {
@@ -126,6 +127,10 @@ const initBill = (data) => {
 const verifyPayment = (data) => {
   return axios.post(`/api/verify-payment`, data);
 };
+const getBookingHistoryByEmail = (email) => {
+  return axios.get(`/api/patient/history?email=${email}`);
+};
+
 export {
   handleLoginApi,
   getAllUsers,
@@ -157,4 +162,5 @@ export {
   transfer,
   initBill,
   verifyPayment,
+  getBookingHistoryByEmail,
 };

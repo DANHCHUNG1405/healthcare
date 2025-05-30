@@ -28,6 +28,8 @@ import DetailClinic from "./Patient/Clinic/DetailClinic";
 import AllDoctors from "./Patient/Doctor/AllDoctors";
 import AllSpecialty from "./Patient/Specialty/AllSpecialty";
 import AllClinic from "./Patient/Clinic/AllClinic";
+import SearchPage from "./HomePage/SearchPage";
+import BookingHistory from "./Patient/BookingHistory";
 class App extends Component {
   handlePersistorState = () => {
     const { persistor } = this.props;
@@ -71,18 +73,23 @@ class App extends Component {
                     component={userIsAuthenticated(Doctor)}
                   />
                   <Route path={path.HOMEPAGE} component={HomePage} />
+                  <Route path={path.SEARCH} component={SearchPage} />
                   <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
                   <Route path={path.ALL_DOCTORS} component={AllDoctors} />
                   <Route
                     path={path.DETAIL_SPECIALTY}
                     component={DetailSpecialty}
                   />
-                  <Route path="/all-specialty" component={AllSpecialty} />
+                  <Route path={path.ALL_SPECIALTY} component={AllSpecialty} />
                   <Route path={path.DETAIL_CLINIC} component={DetailClinic} />
-                  <Route path="/all-clinic" component={AllClinic} />
+                  <Route path={path.ALL_CLINIC} component={AllClinic} />
                   <Route
                     path={path.VERIFY_EMAIL_BOOKING}
                     component={VerifyEmail}
+                  />
+                  <Route
+                    path={path.BOOKING_HISTORY}
+                    component={BookingHistory}
                   />
                 </Switch>
               </CustomScrollbars>
