@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import * as actions from "../../../store/actions";
 import { LANGUAGES } from "../../../utils";
 import { withRouter } from "react-router";
+import "./OutStandingDoctor.scss";
 class OutStandingDoctor extends Component {
   constructor(props) {
     super(props);
@@ -79,6 +80,11 @@ class OutStandingDoctor extends Component {
                         <div className="position text-center">
                           <div>
                             {language === LANGUAGES.VI ? nameVi : nameEn}
+                          </div>
+                          <div className="specialty-name">
+                            {item.Doctor_Infor &&
+                              item.Doctor_Infor.specialtyData &&
+                              item.Doctor_Infor.specialtyData.name}
                           </div>
                         </div>
                       </div>

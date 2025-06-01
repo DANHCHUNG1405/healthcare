@@ -214,21 +214,28 @@ class SearchPage extends Component {
           {filteredDoctors.length > 0 && (
             <div className="search-section">
               <div className="section-title">Bác sĩ</div>
-              <ul className="list-items">
-                {filteredDoctors.map((item, index) => (
-                  <li
-                    key={index}
-                    className="list-item"
-                    onClick={() => this.handleViewDetailDoctor(item)}
-                  >
-                    <ProfileDoctor
-                      doctorId={item.id}
-                      isShowDescriptionDoctor={false}
-                      isShowLinkDetail={false}
-                      isShowPrice={false}
-                    />
-                  </li>
-                ))}
+              <ul className="list-items doctor-list">
+                {filteredDoctors.map((item, index) => {
+                  const specialtyName =
+                    item.Doctor_Infor?.specialtyData?.name ||
+                    "Chuyên khoa chưa cập nhật";
+
+                  return (
+                    <li
+                      key={index}
+                      className="list-item doctor-item"
+                      onClick={() => this.handleViewDetailDoctor(item)}
+                    >
+                      <ProfileDoctor
+                        doctorId={item.id}
+                        isShowDescriptionDoctor={false}
+                        isShowLinkDetail={false}
+                        isShowPrice={false}
+                      />
+                      <div className="doctor-specialty">{specialtyName}</div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

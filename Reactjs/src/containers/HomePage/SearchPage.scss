@@ -155,6 +155,21 @@
           }
         }
       }
+      .doctor-list {
+        .doctor-item {
+          display: flex;
+          flex-direction: column; // đổi thành column để xuống dòng
+          align-items: flex-start;
+
+          .doctor-specialty {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #888;
+            font-style: italic;
+            margin-left: 52px; // canh lề thẳng hàng với tên bác sĩ (avatar + margin-right)
+          }
+        }
+      }
     }
   }
 }
