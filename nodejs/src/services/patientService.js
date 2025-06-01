@@ -2,6 +2,7 @@ import db from "../models/index";
 import emailService from "./emailService";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
+import { generateOTP, saveOTP } from "./otpService"; // file mới bạn sẽ tạo
 require("dotenv").config();
 
 const buildUrlEmail = (doctorId, token) => {
@@ -184,8 +185,78 @@ let getBookingHistoryByEmail = async (email) => {
     };
   }
 };
+let sendOTPToEmail = async (email) => {
+  if (!email) {
+    return {
+      errCode: 1,
+      errMessage: "Missing email!",
+    };
+  }
+
+  try {
+    const otp = generateOTP(); // sinh mã OTP ngẫu nhiên
+    await saveOTP(email, otp); // lưu vào DB
+
+    // Gửi email
+    await emailService.sendOtpEmail({
+      receiverEmail: email,
+      subject: "Xác minh OTP truy xuất lịch sử đặt lịch",
+      otp: otp,
+    });
+
+    return {
+      errCode: 0,
+      message: "OTP sent successfully",
+    };
+  } catch (err) {
+    console.error("Error sending OTP:", err);
+    return {
+      errCode: -1,
+      errMessage: "Failed to send OTP",
+    };
+  }
+};
+let verifyOTP = async (email, otp) => {
+  if (!email || !otp) {
+    return {
+      errCode: 1,
+      errMessage: "Missing input!",
+    };
+  }
+
+  try {
+    const record = await db.OtpVerification.findOne({
+      where: { email, otp },
+      order: [["createdAt", "DESC"]],
+    });
+
+    if (!record) {
+      return { errCode: 2, errMessage: "OTP không đúng" };
+    }
+
+    const createdAt = moment(record.createdAt);
+    const now = moment();
+
+    if (now.diff(createdAt, "minutes") > 5) {
+      return { errCode: 3, errMessage: "OTP đã hết hạn" };
+    }
+
+    return {
+      errCode: 0,
+      message: "OTP verified",
+    };
+  } catch (err) {
+    console.error("Error verifying OTP:", err);
+    return {
+      errCode: -1,
+      errMessage: "Server error during OTP verification",
+    };
+  }
+};
 module.exports = {
   postBookAppointment,
   postVerifyBookAppointment,
   getBookingHistoryByEmail,
+  sendOTPToEmail,
+  verifyOTP,
 };

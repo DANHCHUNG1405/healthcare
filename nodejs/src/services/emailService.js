@@ -142,8 +142,45 @@ let getBodyHTMLEmailConfirm = (dataSend) => {
   }
   return result;
 };
+let getBodyHTMLEmailOtp = (dataSend) => {
+  let otp = encode(dataSend.otp);
+  let patientName = encode(dataSend.patientName || "");
+
+  let result = `
+    <h3>Xin chào ${patientName || "bạn"}!</h3>
+    <p>Bạn nhận được mã xác thực OTP từ hệ thống HealthCare.</p>
+    <p><strong>Mã OTP của bạn là:</strong></p>
+    <div style="font-size: 24px; font-weight: bold; color: #1a73e8;">${otp}</div>
+    <p>Mã OTP có hiệu lực trong vòng 5 phút.</p>
+    <div>Xin chân thành cảm ơn!</div>
+  `;
+  return result;
+};
+let sendOtpEmail = async (dataSend) => {
+  console.log("Data to send otp:", dataSend);
+
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  let html = dataSend.htmlContent || getBodyHTMLEmailOtp(dataSend); // ← Ưu tiên htmlContent
+  console.log("HTML email body being sent:\n", html);
+  let info = await transporter.sendMail({
+    from: `"HealthCare OTP 👻" <${process.env.EMAIL_APP}>`,
+    to: dataSend.receiverEmail,
+    subject: dataSend.subject || "Mã xác thực OTP từ HealthCare",
+    html: html,
+  });
+};
 
 module.exports = {
   sendSimpleEmail: sendSimpleEmail,
   sendAttachment: sendAttachment,
+  sendOtpEmail: sendOtpEmail,
 };

@@ -75,6 +75,8 @@ let initWebRoutes = (app) => {
     "/api/patient/history",
     patientController.getBookingHistoryByEmail
   );
+  router.post("/api/send-otp", patientController.sendOTPToEmail);
+  router.post("/api/verify-otp", patientController.verifyOTP);
 
   return app.use("/", router);
 };

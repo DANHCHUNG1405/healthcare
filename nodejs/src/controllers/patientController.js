@@ -38,8 +38,32 @@ let getBookingHistoryByEmail = async (req, res) => {
     });
   }
 };
+let sendOTPToEmail = async (req, res) => {
+  try {
+    let { email } = req.body;
+    let result = await patientService.sendOTPToEmail(email);
+    return res.status(200).json(result);
+  } catch (e) {
+    console.error("Error in sendOTPToEmail:", e);
+    return res.status(500).json({ errCode: -1, errMessage: "Server error" });
+  }
+};
+
+let verifyOTP = async (req, res) => {
+  try {
+    let { email, otp } = req.body;
+    let result = await patientService.verifyOTP(email, otp);
+    return res.status(200).json(result);
+  } catch (e) {
+    console.error("Error in verifyOTP:", e);
+    return res.status(500).json({ errCode: -1, errMessage: "Server error" });
+  }
+};
+
 module.exports = {
   postBookAppointment: postBookAppointment,
   postVerifyBookAppointment: postVerifyBookAppointment,
   getBookingHistoryByEmail: getBookingHistoryByEmail,
+  sendOTPToEmail: sendOTPToEmail,
+  verifyOTP: verifyOTP,
 };
