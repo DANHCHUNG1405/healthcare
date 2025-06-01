@@ -46,12 +46,15 @@ class BookingHistory extends Component {
 
     try {
       const res = await sendOtpToEmail(email);
-      if (res.data.errCode === 0) {
+      // Giả sử res.errCode là đủ để kiểm tra thành công, nếu API trả về res.data.errCode thì cần điều chỉnh lại
+      if (res.errCode === 0) {
         this.setState({ step: "otp", errMsg: "" });
       } else {
-        this.setState({ errMsg: res.data.message || "Không thể gửi OTP." });
+        // Kiểm tra xem `res.message` có tồn tại không, nếu không thì dùng fallback.
+        this.setState({ errMsg: res.message || "Không thể gửi OTP." });
       }
     } catch (e) {
+      console.error("Error sending OTP:", e); // Thêm log để dễ debug
       this.setState({ errMsg: "Đã xảy ra lỗi khi gửi OTP." });
     } finally {
       this.setState({ loading: false });
@@ -69,12 +72,18 @@ class BookingHistory extends Component {
 
     try {
       const res = await verifyOtpCode(email, otp);
-      if (res.data.errCode === 0) {
-        this.setState({ step: "result", verified: true, errMsg: "" });
+      if (res.errCode === 0) {
+        this.setState({ verified: true, errMsg: "" }); // Cập nhật verified thành true
+
+        // Gọi handleLookup ngay lập tức để tải lịch sử
+        await this.handleLookup(); // <-- THÊM DÒNG NÀY
+        this.setState({ step: "result" }); // Chuyển sang bước result sau khi lookup hoàn tất
       } else {
-        this.setState({ errMsg: res.data.message || "OTP không đúng." });
+        // Kiểm tra xem `res.message` có tồn tại không, nếu không thì dùng fallback.
+        this.setState({ errMsg: res.message || "OTP không đúng." });
       }
     } catch (e) {
+      console.error("Error verifying OTP:", e); // Thêm log để dễ debug
       this.setState({ errMsg: "Đã xảy ra lỗi khi xác minh OTP." });
     } finally {
       this.setState({ loading: false });
@@ -90,16 +99,20 @@ class BookingHistory extends Component {
       if (res.errCode === 0) {
         this.setState({ history: res.data });
       } else {
+        // Kiểm tra xem `res.errMessage` có tồn tại không, nếu không thì dùng fallback.
         this.setState({
-          errMsg: res.data.errMessage || "Không tìm thấy lịch sử.",
+          errMsg: res.errMessage || "Không tìm thấy lịch sử.",
         });
       }
     } catch (error) {
+      console.error("Error looking up booking history:", error); // Thêm log để dễ debug
       this.setState({ errMsg: "Có lỗi xảy ra khi tra cứu." });
     } finally {
       this.setState({ loading: false });
     }
   };
+
+  // ... (renderEmailStep, renderOtpStep, renderResultStep, render giữ nguyên)
 
   renderEmailStep = () => {
     const { email, loading } = this.state;
@@ -134,6 +147,7 @@ class BookingHistory extends Component {
         </button>
         <button
           onClick={() => this.setState({ step: "email", errMsg: "", otp: "" })}
+          className="secondary-button" // Thêm class cho nút phụ
         >
           Nhập lại email
         </button>
@@ -143,11 +157,18 @@ class BookingHistory extends Component {
 
   renderResultStep = () => {
     const { loading, history } = this.state;
+    // Bạn có thể cân nhắc ẩn nút "Xem lịch sử đặt lịch" nếu bạn đã tự động gọi nó
+    // Hoặc giữ lại nó để người dùng có thể tải lại lịch sử nếu cần
     return (
       <>
-        <button onClick={this.handleLookup} disabled={loading}>
+        {/* <button onClick={this.handleLookup} disabled={loading}>
           {loading ? "Đang tra cứu..." : "Xem lịch sử đặt lịch"}
-        </button>
+        </button> */}
+        {loading && <p>Đang tải lịch sử...</p>} {/* Hiển thị thông báo tải */}
+        {!loading && history.length === 0 && (
+          <p>Không tìm thấy lịch sử đặt lịch nào.</p>
+        )}{" "}
+        {/* Thông báo khi không có lịch sử */}
         <div className="booking-list">
           {history.map((item) => (
             <div key={item.id} className="booking-item">
@@ -168,12 +189,28 @@ class BookingHistory extends Component {
             </div>
           ))}
         </div>
+        <button
+          onClick={() =>
+            this.setState({
+              step: "email",
+              email: "",
+              otp: "",
+              verified: false,
+              history: [],
+              errMsg: "",
+            })
+          }
+          className="secondary-button" // Thêm class cho nút phụ
+        >
+          Tra cứu lịch sử mới
+        </button>
       </>
     );
   };
 
   render() {
     const { step, errMsg } = this.state;
+    console.log("step: ", this.state.step);
 
     return (
       <>
