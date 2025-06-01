@@ -25,10 +25,22 @@ let getTopDoctorHome = (limitInput) => {
             as: "genderData",
             attributes: ["valueEn", "valueVi"],
           },
+          {
+            model: db.Doctor_Infor,
+            attributes: ["specialtyId"],
+            include: [
+              {
+                model: db.Specialty,
+                as: "specialtyData",
+                attributes: ["name"],
+              },
+            ],
+          },
         ],
-        raw: true,
+        raw: false, // Cần để nest hoạt động đúng
         nest: true,
       });
+
       resolve({
         errCode: 0,
         data: users,
@@ -38,20 +50,37 @@ let getTopDoctorHome = (limitInput) => {
     }
   });
 };
+
 let getAllDoctors = () => {
   return new Promise(async (resolve, reject) => {
     try {
       let doctors = await db.User.findAll({
         where: { roleId: "R2" },
         attributes: {
-          exclude: ["password", "image"],
+          exclude: ["password"],
         },
+        include: [
+          {
+            model: db.Doctor_Infor,
+            attributes: ["specialtyId"],
+            include: [
+              {
+                model: db.Specialty,
+                as: "specialtyData", // <- tên này phải giống với model khai báo
+                attributes: ["name"],
+              },
+            ],
+          },
+        ],
+        raw: false, // KHÔNG để raw: true nếu dùng include sâu
+        nest: true,
       });
+
       resolve({
         errCode: 0,
         data: doctors,
       });
-    } catch (error) {
+    } catch (e) {
       reject(e);
     }
   });
