@@ -6,6 +6,7 @@ import { getDetailInforDoctor } from "../../../services/userService";
 import { LANGUAGES } from "../../../utils";
 import DoctorSchedule from "./DoctorSchedule";
 import DoctorExtraInfor from "./DoctorExtraInfor";
+
 class DetailDoctor extends Component {
   constructor(props) {
     super(props);
@@ -38,12 +39,24 @@ class DetailDoctor extends Component {
 
   render() {
     let { language } = this.props;
-    let { detailDoctor, messages, doctorIsOnline } = this.state;
+    let { detailDoctor } = this.state;
     let nameVi = "",
       nameEn = "";
+    let clinicName = "";
+    let clinicAddress = "";
+
     if (detailDoctor && detailDoctor.positionData) {
       nameVi = `${detailDoctor.positionData.valueVi}, ${detailDoctor.lastName} ${detailDoctor.firstName}`;
       nameEn = `${detailDoctor.positionData.valueEn}, ${detailDoctor.firstName} ${detailDoctor.lastName}`;
+    }
+
+    if (
+      detailDoctor &&
+      detailDoctor.Doctor_Infor &&
+      detailDoctor.Doctor_Infor.clinicData
+    ) {
+      clinicName = detailDoctor.Doctor_Infor.clinicData.name || "";
+      clinicAddress = detailDoctor.Doctor_Infor.clinicData.address || "";
     }
 
     return (
@@ -64,11 +77,9 @@ class DetailDoctor extends Component {
                 {language === LANGUAGES.VI ? nameVi : nameEn}
               </div>
               <div className="down">
-                {detailDoctor.Markdown &&
-                  detailDoctor &&
-                  detailDoctor.Markdown.description && (
-                    <span>{detailDoctor.Markdown.description}</span>
-                  )}
+                {detailDoctor.Markdown && detailDoctor.Markdown.description && (
+                  <span>{detailDoctor.Markdown.description}</span>
+                )}
               </div>
             </div>
           </div>
@@ -83,15 +94,13 @@ class DetailDoctor extends Component {
             </div>
           </div>
           <div className="detail-infor-doctor">
-            {detailDoctor &&
-              detailDoctor.Markdown &&
-              detailDoctor.Markdown.contentHTML && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: detailDoctor.Markdown.contentHTML,
-                  }}
-                ></div>
-              )}
+            {detailDoctor.Markdown && detailDoctor.Markdown.contentHTML && (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: detailDoctor.Markdown.contentHTML,
+                }}
+              ></div>
+            )}
           </div>
         </div>
       </>

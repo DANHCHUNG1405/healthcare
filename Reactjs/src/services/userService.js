@@ -112,21 +112,7 @@ const getDoctorInfoById = (data) => {
     headers: authHeader(),
   });
 };
-// const getDetailBillByToken = (data) => {
-//   return axios.get(`/api/get-detail-bill?token=${data.token}`);
-// };
-// const getContractAbi = () => {
-//   return axios.get(`/api/contract/abi`);
-// };
-// const transfer = (data) => {
-//   return axios.post(`/api/transfer`, data);
-// };
-// const initBill = (data) => {
-//   return axios.post(`/api/init-bill`, data);
-// };
-// const verifyPayment = (data) => {
-//   return axios.post(`/api/verify-payment`, data);
-// };
+
 const getBookingHistoryByEmail = (email) => {
   return axios.get(`/api/patient/history?email=${email}`);
 };
@@ -164,11 +150,6 @@ export {
   getAllPatientForDoctor,
   postSendRemedy,
   getDoctorInfoById,
-  // getDetailBillByToken,
-  // getContractAbi,
-  // transfer,
-  // initBill,
-  // verifyPayment,
   getBookingHistoryByEmail,
   sendOtpToEmail,
   verifyOtpCode,

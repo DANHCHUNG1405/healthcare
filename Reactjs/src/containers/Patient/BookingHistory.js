@@ -157,13 +157,9 @@ class BookingHistory extends Component {
 
   renderResultStep = () => {
     const { loading, history } = this.state;
-    // Bạn có thể cân nhắc ẩn nút "Xem lịch sử đặt lịch" nếu bạn đã tự động gọi nó
-    // Hoặc giữ lại nó để người dùng có thể tải lại lịch sử nếu cần
+
     return (
       <>
-        {/* <button onClick={this.handleLookup} disabled={loading}>
-          {loading ? "Đang tra cứu..." : "Xem lịch sử đặt lịch"}
-        </button> */}
         {loading && <p>Đang tải lịch sử...</p>} {/* Hiển thị thông báo tải */}
         {!loading && history.length === 0 && (
           <p>Không tìm thấy lịch sử đặt lịch nào.</p>

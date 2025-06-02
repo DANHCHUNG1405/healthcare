@@ -7,6 +7,7 @@ import { getExtraInforDoctorById } from "../../../services/userService";
 import { LANGUAGES } from "../../../utils";
 import { FormattedMessage } from "react-intl";
 import NumberFormat from "react-number-format";
+
 class DetailDoctor extends Component {
   constructor(props) {
     super(props);
@@ -19,6 +20,7 @@ class DetailDoctor extends Component {
   async componentDidMount() {
     if (this.props.doctorIdFromParent) {
       let res = await getExtraInforDoctorById(this.props.doctorIdFromParent);
+      console.log("Extra info from API:", res.data);
       if (res && res.errCode === 0) {
         this.setState({
           extraInfor: res.data,
@@ -29,6 +31,7 @@ class DetailDoctor extends Component {
 
   async componentDidUpdate(prevProps, preState, snapshot) {
     if (this.props.language !== prevProps.language) {
+      // có thể xử lý gì đó khi đổi ngôn ngữ (nếu cần)
     }
     if (this.props.doctorIdFromParent !== prevProps.doctorIdFromParent) {
       let res = await getExtraInforDoctorById(this.props.doctorIdFromParent);
@@ -50,20 +53,23 @@ class DetailDoctor extends Component {
     let { isShowDetailInfor, extraInfor } = this.state;
     let { language } = this.props;
 
+    // Lấy tên phòng khám & địa chỉ theo cách mới
+    let clinicName = "";
+    let clinicAddress = "";
+
+    if (extraInfor && extraInfor.clinicData) {
+      clinicName = extraInfor.clinicData.name || "";
+      clinicAddress = extraInfor.clinicData.address || "";
+    }
+
     return (
       <div className="doctor-extra-infor-container">
         <div className="content-up">
           <div className="text-address">
             <FormattedMessage id="patient.extra-doctor-infor.text-address" />
           </div>
-          <div className="name-clinic">
-            {extraInfor && extraInfor.nameClinic ? extraInfor.nameClinic : ""}
-          </div>
-          <div className="detail-address">
-            {extraInfor && extraInfor.addressClinic
-              ? extraInfor.addressClinic
-              : ""}
-          </div>
+          <div className="name-clinic">{clinicName}</div>
+          <div className="detail-address">{clinicAddress}</div>
         </div>
         <div className="content-down">
           {isShowDetailInfor === false && (
@@ -142,12 +148,12 @@ class DetailDoctor extends Component {
                 <FormattedMessage id="patient.extra-doctor-infor.payment" />
                 {extraInfor &&
                 extraInfor.paymentTypeData &&
-                language == LANGUAGES.VI
+                language === LANGUAGES.VI
                   ? extraInfor.paymentTypeData.valueVi
                   : ""}
                 {extraInfor &&
                 extraInfor.paymentTypeData &&
-                language == LANGUAGES.EN
+                language === LANGUAGES.EN
                   ? extraInfor.paymentTypeData.valueEn
                   : ""}
               </div>
