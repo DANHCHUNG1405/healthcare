@@ -128,8 +128,7 @@ let saveDetailInforDoctor = (inputData) => {
           doctorInfor.priceId = inputData.selectedPrice;
           doctorInfor.provinceId = inputData.selectedProvince;
           doctorInfor.paymentId = inputData.selectedPayment;
-          doctorInfor.nameClinic = inputData.nameClinic;
-          doctorInfor.addressClinic = inputData.addressClinic;
+
           doctorInfor.note = inputData.note;
           doctorInfor.specialtyId = inputData.specialtyId;
           doctorInfor.clinicId = inputData.clinicId;
@@ -140,8 +139,7 @@ let saveDetailInforDoctor = (inputData) => {
             priceId: inputData.selectedPrice,
             provinceId: inputData.selectedProvince,
             paymentId: inputData.selectedPayment,
-            nameClinic: inputData.nameClinic,
-            addressClinic: inputData.addressClinic,
+
             note: inputData.note,
             specialtyId: inputData.specialtyId,
             clinicId: inputData.clinicId,
@@ -185,7 +183,9 @@ let getDetailDoctorById = (inputId) => {
             },
             {
               model: db.Doctor_Infor,
-              attributes: { exclude: ["id", "doctorId"] },
+              attributes: {
+                exclude: ["id", "doctorId", "nameClinic", "addressClinic"], // bỏ 2 trường này
+              },
               include: [
                 {
                   model: db.Allcode,
@@ -202,15 +202,22 @@ let getDetailDoctorById = (inputId) => {
                   as: "paymentTypeData",
                   attributes: ["valueEn", "valueVi"],
                 },
+                {
+                  model: db.Clinic,
+                  as: "clinicData", // lấy thông tin từ bảng clinics
+                  attributes: ["name", "address"],
+                },
               ],
             },
           ],
           raw: false,
           nest: true,
         });
+
         if (data && data.image) {
           data.image = new Buffer(data.image, "base64").toString("binary");
         }
+
         if (!data) data = {};
         resolve({
           errCode: 0,
@@ -222,6 +229,7 @@ let getDetailDoctorById = (inputId) => {
     }
   });
 };
+
 let bulkCreateSchedule = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -282,102 +290,6 @@ let bulkCreateSchedule = (data) => {
   });
 };
 
-// let bulkCreateSchedule = (data) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       if (!data.arrSchedule || !data.doctorId || !data.formatedDate) {
-//         resolve({
-//           errCode: 1,
-//           errMessage: "Missing required parameter!",
-//         });
-//       } else {
-//         let schedule = data.arrSchedule;
-
-//         // Gán maxNumber và chuyển date từ timestamp => Date object
-//         if (schedule && schedule.length > 0) {
-//           schedule = schedule.map((item) => {
-//             item.maxNumber = MAX_NUMBER_SCHEDULE;
-//             item.date = new Date(+item.date).toISOString().split("T")[0]; // ✅ sửa lại dòng này
-//             return item;
-//           });
-//         }
-
-//         // Lấy các lịch đã tồn tại từ DB
-//         let existing = await db.Schedule.findAll({
-//           where: { doctorId: data.doctorId, date: data.formatedDate },
-//           attributes: ["timeType", "date", "doctorId", "maxNumber"],
-//         });
-
-//         // Convert date từ DB thành timestamp để so sánh
-//         if (existing && existing.length > 0) {
-//           existing = existing.map((item) => {
-//             item.date = item.date; // giữ nguyên string, không chuyển timestamp
-//             return item;
-//           });
-//         }
-
-//         // Tìm các lịch chưa tồn tại để tạo mới
-//         let toCreate = _.differenceWith(schedule, existing, (a, b) => {
-//           return a.timeType === b.timeType && +a.date === +b.date;
-//         });
-
-//         // Lưu các lịch mới
-//         if (toCreate && toCreate.length > 0) {
-//           await db.Schedule.bulkCreate(toCreate);
-//         }
-
-//         resolve({
-//           errCode: 0,
-//           errMessage: "OK",
-//         });
-//       }
-//     } catch (error) {
-//       reject(error);
-//     }
-//   });
-// };
-
-// let getScheduleByDate = (doctorId, date) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       if (!doctorId || !date) {
-//         resolve({
-//           errCode: 1,
-//           errMessage: "Missing required parameters",
-//         });
-//       } else {
-//         console.log("check date: ", date);
-//         let dataSchedule = await db.Schedule.findAll({
-//           where: {
-//             doctorId: doctorId,
-//             date: new Date(+date).toISOString().split("T")[0], // ✅ Truy vấn đúng theo định dạng DB lưu
-//           },
-//           include: [
-//             {
-//               model: db.Allcode,
-//               as: "timeTypeData",
-//               attributes: ["valueEn", "valueVi"],
-//             },
-//             {
-//               model: db.User,
-//               as: "doctorData",
-//               attributes: ["firstName", "lastName"],
-//             },
-//           ],
-//           raw: false,
-//           nest: true,
-//         });
-//         if (!dataSchedule) dataSchedule = [];
-//         resolve({
-//           errCode: 0,
-//           data: dataSchedule,
-//         });
-//       }
-//     } catch (error) {
-//       reject(error);
-//     }
-//   });
-// };
 let getScheduleByDate = (doctorId, date) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -461,21 +373,28 @@ let getExtraInforDoctorById = (idInput) => {
               as: "paymentTypeData",
               attributes: ["valueEn", "valueVi"],
             },
+            {
+              model: db.Clinic,
+              as: "clinicData", // 🔥 Thêm dòng này để lấy tên và địa chỉ phòng khám
+              attributes: ["name", "address"],
+            },
           ],
-          raw: true,
+          raw: false, // ✅ Cần là false để giữ nested object (clinicData)
           nest: true,
         });
+
         if (!data) data = {};
         resolve({
           errCode: 0,
           data: data,
         });
       }
-    } catch (error) {
+    } catch (e) {
       reject(e);
     }
   });
 };
+
 let getProfileDoctorById = (inputId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -555,10 +474,9 @@ let checkRequiredFields = (inputData) => {
     "selectedPrice",
     "selectedPayment",
     "selectedProvince",
-    "nameClinic",
-    "addressClinic",
     "note",
     "specialtyId",
+    "clinicId",
   ];
   let isValid = true;
   let element = "";

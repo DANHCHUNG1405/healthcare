@@ -5,6 +5,7 @@ import doctorController from "../controllers/doctorController";
 import patientController from "../controllers/patientController";
 import specialtyController from "../controllers/specialtyController";
 import clinicController from "../controllers/clinicController";
+import historyController from "../controllers/historyController";
 let router = express.Router();
 let initWebRoutes = (app) => {
   router.get("/", homeController.getHomePage);
@@ -77,6 +78,8 @@ let initWebRoutes = (app) => {
   );
   router.post("/api/send-otp", patientController.sendOTPToEmail);
   router.post("/api/verify-otp", patientController.verifyOTP);
+  router.post("/save-remedy", historyController.sendRemedyToHistory);
+  router.get("/history-by-email", historyController.getRemedyHistoryByEmail);
 
   return app.use("/", router);
 };
