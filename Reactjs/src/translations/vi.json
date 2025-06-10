@@ -9,8 +9,45 @@
     "fee": "Gói khám",
     "check-health": "Khám sức khỏe tổng quát",
     "support": "Hỗ trợ",
-    "welcome": "Xin chào"
+    "welcome": "Xin chào",
+    "history": "Tra cứu lịch sử",
+    "search-specialty": "Tìm kiếm chuyên khoa",
+    "search-clinic": "Tìm kiếm cơ sở y tế",
+    "search-doctor": "Tìm kiếm bác sĩ"
   },
+  "bookingHistory": {
+    "title": "Xem lịch sử đặt lịch",
+    "enterEmail": "Nhập email của bạn",
+    "sendOtp": "Gửi mã OTP",
+    "sending": "Đang gửi...",
+    "checkEmailOtp": "Vui lòng kiểm tra email và nhập mã OTP:",
+    "enterOtp": "Nhập mã OTP",
+    "verifying": "Đang xác minh...",
+    "verify": "Xác minh",
+    "resendEmail": "Nhập lại email",
+    "loadingHistory": "Đang tải lịch sử...",
+    "noHistory": "Không tìm thấy lịch sử đặt lịch nào.",
+    "doctor": "Bác sĩ",
+    "date": "Ngày khám",
+    "time": "Ca",
+    "status": "Trạng thái",
+    "diagnosis": "Chẩn đoán",
+    "viewPrescription": "👉 Xem đơn thuốc",
+    "newLookup": "Tra cứu lịch sử mới",
+    "close": "Đóng",
+    "errorEmailRequired": "Vui lòng nhập email!",
+    "errorOtpRequired": "Vui lòng nhập mã OTP!",
+    "otpInvalid": "OTP không đúng.",
+    "sendOtpError": "Đã xảy ra lỗi khi gửi OTP.",
+    "verifyOtpError": "Đã xảy ra lỗi khi xác minh OTP.",
+    "historyFetchError": "Có lỗi xảy ra khi tra cứu.",
+    "statusLabels": {
+      "S1": "Chờ xác nhận",
+      "S2": "Đặt thành công",
+      "S3": "Đã khám"
+    }
+  },
+
   "banner": {
     "title1": "NỀN TẢNG Y TẾ",
     "title2": "CHĂM SÓC SỨC KHỎE TOÀN DIỆN",
@@ -43,6 +80,7 @@
     }
   },
   "manage-user": {
+    "title": "Quản lý người dùng",
     "add": "Thêm mới người dùng",
     "email": "Email",
     "password": "Mật khẩu",
@@ -56,12 +94,15 @@
     "image": "Ảnh đại diện",
     "save": "Lưu user",
     "edit": "Lưu thay đổi",
-    "wallet": "Địa chỉ ví"
+    "load": "Tải ảnh"
   },
   "homepage": {
     "outstanding-doctor": "Bác sĩ nổi bật tuần qua",
     "more-infor": "Xem thêm",
-    "specialty-popular": "Chuyên khoa phổ biến"
+    "specialty-popular": "Chuyên khoa phổ biến",
+    "medical-facility": "Cơ sở y tế nổi bật",
+    "communication": "Truyền thông nói về HeathCare",
+    "description": "HealthCare là một ứng dụng đặt lịch khám bệnh trực tuyến giúp bệnh nhân dễ dàng sắp xếp các buổi tư vấn với bác sĩ. Với HealthCare, người dùng có thể tìm kiếm bác sĩ theo chuyên khoa, xem hồ sơ chi tiết và đặt lịch hẹn dựa trên tình trạng sẵn có theo thời gian thực. Ứng dụng gửi xác nhận đặt lịch ngay lập tức và nhắc nhở để đảm bảo bệnh nhân không bao giờ bỏ lỡ cuộc hẹn. Đối với phòng khám, HealthCare đơn giản hóa việc quản lý lịch trình của bác sĩ và giảm thời gian chờ đợi của bệnh nhân. Được thiết kế với giao diện thân thiện với người dùng và bảo mật dữ liệu mạnh mẽ, HealthCare nâng cao trải nghiệm chăm sóc sức khỏe tổng thể cho cả bệnh nhân và chuyên gia y tế."
   },
   "manage-schedule": {
     "title": "Quản lý kế hoạch khám bệnh của bác sĩ",
@@ -96,6 +137,18 @@
       "btnCancel": "Hủy",
       "priceBooking": "Miễn phí đặt lịch",
       "price": "Giá khám: "
+    },
+    "list": {
+      "doctor": "Danh sách bác sĩ",
+      "specialty": "Danh sách chuyên khoa",
+      "clinic": "Danh sách cơ sở y tế"
+    },
+    "search": {
+      "all": "Tất cả",
+      "specialty": "Chuyên khoa",
+      "clinic": "Cơ sở y tế",
+      "doctor": "Bác sĩ",
+      "placeholder": "Tìm kiếm..."
     }
   },
   "admin": {
@@ -113,6 +166,41 @@
       "note": "Ghi chú",
       "specialty": "Chọn chuyên khoa",
       "select-clinic": "Chọn phòng khám"
+    },
+    "manage-clinic": {
+      "title": "Quản lý phòng khám",
+      "nameClinic": "Tên phòng khám",
+      "addressClinic": "Địa chỉ phòng khám",
+      "pictureClinic": "Ảnh phòng khám",
+      "save": "Lưu thông tin"
+    },
+    "manage-specialty": {
+      "title": "Quản lý chuyên khoa",
+      "nameSpecialty": "Tên chuyên khoa",
+      "pictureSpecialty": "Ảnh chuyên khoa",
+      "save": "Lưu thông tin"
+    }
+  },
+  "doctor": {
+    "manage-patient": {
+      "title": "Quản lý bệnh nhân khám bệnh",
+      "select-date": "Chọn ngày khám",
+      "number": "STT",
+      "appointment": "Thời gian",
+      "fullname": "Họ và tên",
+      "address": "Địa chỉ",
+      "gender": "Giới tính",
+      "action": "Thao tác",
+      "nodata": "Không có dữ liệu",
+      "confirm": "Xác nhận"
+    },
+    "modal": {
+      "title": "Gửi hóa đơn khám bệnh thành công",
+      "email": "Email bệnh nhân",
+      "prescription": "Chọn file đơn thuốc",
+      "diagnosis": "Chẩn đoán",
+      "send": "Gửi",
+      "cancel": "Hủy"
     }
   }
 }

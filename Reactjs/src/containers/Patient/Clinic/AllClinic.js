@@ -4,7 +4,7 @@ import "./AllClinic.scss";
 import HomeHeader from "../../../containers/HomePage/HomeHeader";
 import { getAllClinic } from "../../../services/userService";
 import { withRouter } from "react-router";
-
+import { FormattedMessage } from "react-intl";
 class AllClinic extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +34,9 @@ class AllClinic extends Component {
       <>
         <HomeHeader isShowBanner={false} />
         <div className="all-clinic-container">
-          <div className="all-clinic-title">Danh sách cơ sở y tế</div>
+          <div className="all-clinic-title">
+            <FormattedMessage id="patient.list.clinic" />
+          </div>
           <div className="all-clinic-grid">
             {dataClinics &&
               dataClinics.length > 0 &&

@@ -7,6 +7,7 @@ import MdEditor from "react-markdown-editor-lite";
 import { CommonUtils } from "../../../utils";
 import { createNewClinic } from "../../../services/userService";
 import { toast } from "react-toastify";
+import { FormattedMessage } from "react-intl";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 class ManageClinic extends Component {
@@ -84,12 +85,16 @@ class ManageClinic extends Component {
 
   render() {
     return (
-      <div className="manage-specialty-container">
-        <div className="ms-title">Quản lý phòng khám</div>
+      <div className="manage-clinic-container">
+        <div className="ms-title">
+          <FormattedMessage id="admin.manage-clinic.title" />
+        </div>
 
-        <div className="add-new-specialty row">
+        <div className="add-new-clinic row">
           <div className="col-6 form-group">
-            <label>Tên phòng khám</label>
+            <label>
+              <FormattedMessage id="admin.manage-clinic.nameClinic" />
+            </label>
             <input
               type="text"
               className="form-control"
@@ -98,7 +103,9 @@ class ManageClinic extends Component {
             ></input>
           </div>
           <div className="col-6 form-group">
-            <label>Ảnh phòng khám</label>
+            <label>
+              <FormattedMessage id="admin.manage-clinic.pictureClinic" />
+            </label>
             <input
               type="file"
               className="form-control-file"
@@ -106,7 +113,9 @@ class ManageClinic extends Component {
             ></input>
           </div>
           <div className="col-6 form-group">
-            <label>Địa chỉ phòng khám</label>
+            <label>
+              <FormattedMessage id="admin.manage-clinic.addressClinic" />
+            </label>
             <input
               type="text"
               className="form-control"
@@ -124,10 +133,10 @@ class ManageClinic extends Component {
           </div>
           <div className="col-12">
             <button
-              className="btn-save-new-specialty"
+              className="btn-save-new-clinic"
               onClick={() => this.handleSaveNewClinic()}
             >
-              Save
+              <FormattedMessage id="admin.manage-clinic.save" />
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import MdEditor from "react-markdown-editor-lite";
 import { CommonUtils } from "../../../utils";
 import { createNewSpecialty } from "../../../services/userService";
 import { toast } from "react-toastify";
+import { FormattedMessage } from "react-intl";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 class ManageSpecialty extends Component {
@@ -79,11 +80,15 @@ class ManageSpecialty extends Component {
   render() {
     return (
       <div className="manage-specialty-container">
-        <div className="ms-title">Quản lý chuyên khoa</div>
+        <div className="ms-title">
+          <FormattedMessage id="admin.manage-specialty.title" />
+        </div>
 
         <div className="add-new-specialty row">
           <div className="col-6 form-group">
-            <label>Tên chuyên khoa</label>
+            <label>
+              <FormattedMessage id="admin.manage-specialty.nameSpecialty" />
+            </label>
             <input
               type="text"
               className="form-control"
@@ -92,7 +97,9 @@ class ManageSpecialty extends Component {
             ></input>
           </div>
           <div className="col-6 form-group">
-            <label>Ảnh chuyên khoa</label>
+            <label>
+              <FormattedMessage id="admin.manage-specialty.pictureSpecialty" />
+            </label>
             <input
               type="file"
               className="form-control-file"
@@ -112,7 +119,7 @@ class ManageSpecialty extends Component {
               className="btn-save-new-specialty"
               onClick={() => this.handleSaveNewSpecialty()}
             >
-              Save
+              <FormattedMessage id="admin.manage-specialty.save" />
             </button>
           </div>
         </div>

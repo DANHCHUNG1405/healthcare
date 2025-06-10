@@ -34,7 +34,8 @@ class ManageDoctor extends Component {
       selectedProvince: null,
       selectedClinic: null,
       selectedSpecialty: null,
-      note: "", // giữ lại nếu bạn vẫn cần
+      note: "",
+      clinicAddress: "", // <-- Đã thêm state này
     };
   }
 
@@ -118,6 +119,7 @@ class ManageDoctor extends Component {
           result = inputData.map((item) => ({
             label: item.name,
             value: item.id,
+            address: item.address, // <-- Đảm bảo rằng bạn có trường 'address' ở đây
           }));
           break;
         default:
@@ -208,6 +210,9 @@ class ManageDoctor extends Component {
         (item) => item.value === clinicId
       );
 
+      // <-- Lấy địa chỉ phòng khám từ selectedClinic (đã có trường 'address' trong buildDataInputSelect cho CLINIC)
+      let clinicAddress = selectedClinic ? selectedClinic.address : "";
+
       this.setState({
         contentHTML: markdown.contentHTML || "",
         contentMarkdown: markdown.contentMarkdown || "",
@@ -224,6 +229,7 @@ class ManageDoctor extends Component {
         selectedProvince: selectedProvince || null,
         selectedSpecialty: selectedSpecialty || null,
         selectedClinic: selectedClinic || null,
+        clinicAddress: clinicAddress, // <-- Cập nhật state địa chỉ
       });
     } else {
       this.resetForm();
@@ -242,11 +248,20 @@ class ManageDoctor extends Component {
       selectedProvince: null,
       selectedSpecialty: null,
       selectedClinic: null,
+      clinicAddress: "", // <-- Reset địa chỉ khi không có dữ liệu cũ hoặc chọn lại
     });
   };
 
   handleChangeSelectDoctorInfor = (selectedOption, name) => {
-    this.setState({ [name.name]: selectedOption });
+    // Khi người dùng chọn phòng khám, cập nhật cả selectedClinic và clinicAddress
+    if (name.name === "selectedClinic") {
+      this.setState({
+        selectedClinic: selectedOption,
+        clinicAddress: selectedOption ? selectedOption.address : "", // Cập nhật địa chỉ ngay lập tức
+      });
+    } else {
+      this.setState({ [name.name]: selectedOption });
+    }
   };
 
   handleOnChangeText = (event, id) => {
@@ -269,7 +284,9 @@ class ManageDoctor extends Component {
               value={this.state.selectedOption}
               onChange={this.handleChangeSelect}
               options={this.state.listDoctors}
-              placeholder={"Chọn bác sĩ"}
+              placeholder={
+                <FormattedMessage id="admin.manage-doctor.select-doctor" />
+              }
               name={"selectedOption"}
               isClearable
             />
@@ -333,7 +350,7 @@ class ManageDoctor extends Component {
               isClearable
             />
           </div>
-          {/* Đã xóa 2 ô input tên phòng khám và địa chỉ phòng khám ở đây */}
+
           <div className="col-4 form-group">
             <label>
               <FormattedMessage id={"admin.manage-doctor.note"} />
@@ -374,6 +391,19 @@ class ManageDoctor extends Component {
               isClearable
             />
           </div>
+          {/* <-- ĐÃ THÊM PHẦN NÀY CHO ĐỊA CHỈ PHÒNG KHÁM */}
+          <div className="col-4 form-group">
+            <label>
+              <FormattedMessage id="admin.manage-doctor.addressClinic" />
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              value={this.state.clinicAddress}
+              disabled // Để không cho phép chỉnh sửa
+            />
+          </div>
+          {/* <-- KẾT THÚC PHẦN THÊM */}
         </div>
         <div className="manage-doctor-editor">
           <MdEditor

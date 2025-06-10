@@ -160,7 +160,8 @@ class ManageSchedule extends Component {
       this.state;
     let { language } = this.props;
     let today = new Date();
-
+    let tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
     return (
       <div className="manage-schedule-container">
         <div className="m-s-title">
@@ -195,7 +196,7 @@ class ManageSchedule extends Component {
                 onChange={this.handleOnchangeDatePicker}
                 className="form-control"
                 value={currentDate}
-                minDate={today}
+                minDate={tomorrow}
               />
             </div>
             <div className="col-12 pick-hour-container">

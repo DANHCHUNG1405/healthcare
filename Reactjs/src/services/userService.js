@@ -124,6 +124,10 @@ const verifyOtpCode = (email, otp) => {
   return axios.post(`/api/verify-otp`, { email, otp });
 };
 
+const saveRemedy = (data) => {
+  return axios.post("/api/save-remedy", data);
+};
+
 export {
   handleLoginApi,
   getAllUsers,
@@ -153,4 +157,5 @@ export {
   getBookingHistoryByEmail,
   sendOtpToEmail,
   verifyOtpCode,
+  saveRemedy,
 };

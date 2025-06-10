@@ -7,7 +7,7 @@ class About extends Component {
     return (
       <div className="section-share section-about">
         <div className="section-about-header">
-          Truyền thông nói về HeathCare
+          <FormattedMessage id="homepage.communication" />
         </div>
         <div className="section-about-content">
           <div className="content-left">
@@ -22,7 +22,7 @@ class About extends Component {
             ></iframe>
           </div>
           <div className="content-right">
-            <p>
+            {/* <p>
               HealthCare is a medical appointment booking app that helps
               patients easily schedule consultations with doctors online. With
               HealthCare, users can search for doctors by specialty, view
@@ -34,6 +34,9 @@ class About extends Component {
               interface and strong data security, HealthCare enhances the
               overall healthcare experience for both patients and medical
               professionals.
+            </p> */}
+            <p>
+              <FormattedMessage id="homepage.description" />
             </p>
           </div>
         </div>

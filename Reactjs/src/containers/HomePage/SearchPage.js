@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { injectIntl, FormattedMessage } from "react-intl";
 import HomeHeader from "./HomeHeader";
 import {
   getAllSpecialty,
@@ -9,6 +10,7 @@ import {
 import { withRouter } from "react-router";
 import "./SearchPage.scss";
 import ProfileDoctor from "../Patient/Doctor/ProfileDoctor";
+
 class SearchPage extends Component {
   constructor(props) {
     super(props);
@@ -65,14 +67,17 @@ class SearchPage extends Component {
   handleSelectFilter = (value) => {
     this.setState({ filterType: value, showDropdown: false });
   };
+
   handleViewDetailSpecialty = (item) => {
     this.props.history.push(`/detail-specialty/${item.id}`);
   };
+
   handleViewDetailClinic = (clinic) => {
     if (this.props.history) {
       this.props.history.push(`/detail-clinic/${clinic.id}`);
     }
   };
+
   handleViewDetailDoctor = (doctor) => {
     if (this.props.history) {
       this.props.history.push(`/detail-doctor/${doctor.id}`);
@@ -121,11 +126,13 @@ class SearchPage extends Component {
       showDropdown,
     } = this.state;
 
+    const { intl } = this.props;
+
     const filterOptions = [
-      { value: "all", label: "Tất cả" },
-      { value: "specialty", label: "Chuyên khoa" },
-      { value: "clinic", label: "Cơ sở y tế" },
-      { value: "doctor", label: "Bác sĩ" },
+      { value: "all", label: "patient.search.all" },
+      { value: "specialty", label: "patient.search.specialty" },
+      { value: "clinic", label: "patient.search.clinic" },
+      { value: "doctor", label: "patient.search.doctor" },
     ];
 
     const filteredSpecialties = this.filterData(dataSpecialty, "specialty");
@@ -140,7 +147,10 @@ class SearchPage extends Component {
             <i className="fas fa-search"></i>
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder={intl.formatMessage({
+                id: "patient.search.placeholder",
+                defaultMessage: "Tìm kiếm...",
+              })}
               value={keyword}
               onChange={this.handleInputChange}
             />
@@ -149,11 +159,15 @@ class SearchPage extends Component {
               ref={this.dropdownRef}
               onClick={(e) => {
                 e.stopPropagation();
-                this.setState((prev) => ({ showDropdown: !prev.showDropdown }));
+                this.setState((prev) => ({
+                  showDropdown: !prev.showDropdown,
+                }));
               }}
             >
               <span className="selected">
-                {filterOptions.find((f) => f.value === filterType)?.label}
+                <FormattedMessage
+                  id={filterOptions.find((f) => f.value === filterType)?.label}
+                />
               </span>
               <span className="dropdown-icon">&#9662;</span>
               {showDropdown && (
@@ -167,7 +181,7 @@ class SearchPage extends Component {
                         this.handleSelectFilter(option.value);
                       }}
                     >
-                      {option.label}
+                      <FormattedMessage id={option.label} />
                     </div>
                   ))}
                 </div>
@@ -177,7 +191,12 @@ class SearchPage extends Component {
 
           {filteredSpecialties.length > 0 && (
             <div className="search-section">
-              <div className="section-title">Chuyên khoa</div>
+              <div className="section-title">
+                <FormattedMessage
+                  id="patient.search.specialty"
+                  defaultMessage="Chuyên khoa"
+                />
+              </div>
               <ul className="list-items">
                 {filteredSpecialties.map((item, index) => (
                   <li
@@ -195,7 +214,12 @@ class SearchPage extends Component {
 
           {filteredClinics.length > 0 && (
             <div className="search-section">
-              <div className="section-title">Cơ sở y tế</div>
+              <div className="section-title">
+                <FormattedMessage
+                  id="patient.search.clinic"
+                  defaultMessage="Cơ sở y tế"
+                />
+              </div>
               <ul className="list-items">
                 {filteredClinics.map((item, index) => (
                   <li
@@ -213,29 +237,27 @@ class SearchPage extends Component {
 
           {filteredDoctors.length > 0 && (
             <div className="search-section">
-              <div className="section-title">Bác sĩ</div>
+              <div className="section-title">
+                <FormattedMessage
+                  id="patient.search.doctor"
+                  defaultMessage="Bác sĩ"
+                />
+              </div>
               <ul className="list-items doctor-list">
-                {filteredDoctors.map((item, index) => {
-                  const specialtyName =
-                    item.Doctor_Infor?.specialtyData?.name ||
-                    "Chuyên khoa chưa cập nhật";
-
-                  return (
-                    <li
-                      key={index}
-                      className="list-item doctor-item"
-                      onClick={() => this.handleViewDetailDoctor(item)}
-                    >
-                      <ProfileDoctor
-                        doctorId={item.id}
-                        isShowDescriptionDoctor={false}
-                        isShowLinkDetail={false}
-                        isShowPrice={false}
-                      />
-                      <div className="doctor-specialty">{specialtyName}</div>
-                    </li>
-                  );
-                })}
+                {filteredDoctors.map((item, index) => (
+                  <li
+                    key={index}
+                    className="list-item doctor-item"
+                    onClick={() => this.handleViewDetailDoctor(item)}
+                  >
+                    <ProfileDoctor
+                      doctorId={item.id}
+                      isShowDescriptionDoctor={false}
+                      isShowLinkDetail={false}
+                      isShowPrice={false}
+                    />
+                  </li>
+                ))}
               </ul>
             </div>
           )}
@@ -245,4 +267,4 @@ class SearchPage extends Component {
   }
 }
 
-export default withRouter(connect(null, null)(SearchPage));
+export default withRouter(connect(null, null)(injectIntl(SearchPage)));

@@ -6,7 +6,7 @@ import { getAllDoctors } from "../../../services/userService";
 import DoctorSchedule from "../Doctor/DoctorSchedule";
 import DoctorExtraInfor from "../Doctor/DoctorExtraInfor";
 import ProfileDoctor from "../Doctor/ProfileDoctor";
-
+import { FormattedMessage } from "react-intl";
 class AllDoctors extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +31,9 @@ class AllDoctors extends Component {
       <>
         <HomeHeader isShowBanner={false} />
         <div className="all-doctors-container">
-          <div className="title">Danh sách tất cả bác sĩ</div>
+          <div className="title">
+            <FormattedMessage id="patient.list.doctor" />
+          </div>
           <div className="detail-doctor-body">
             {allDoctors &&
               allDoctors.length > 0 &&

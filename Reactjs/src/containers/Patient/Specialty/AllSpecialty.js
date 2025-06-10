@@ -4,6 +4,7 @@ import { withRouter } from "react-router";
 import "./AllSpecialty.scss";
 import { getAllSpecialty } from "../../../services/userService";
 import HomeHeader from "../../HomePage/HomeHeader";
+import { FormattedMessage } from "react-intl";
 class AllSpecialty extends Component {
   constructor(props) {
     super(props);
@@ -32,7 +33,9 @@ class AllSpecialty extends Component {
       <>
         <HomeHeader isShowBanner={false} />
         <div className="all-specialty-container">
-          <h2 className="all-specialty-title">Danh sách chuyên khoa</h2>
+          <h2 className="all-specialty-title">
+            <FormattedMessage id="patient.list.specialty" />
+          </h2>
           <div className="all-specialty-grid">
             {dataSpecialty &&
               dataSpecialty.length > 0 &&

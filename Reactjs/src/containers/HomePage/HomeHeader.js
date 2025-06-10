@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./HomeHeader.scss";
 import logo from "../../assets/logo.PNG";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, injectIntl } from "react-intl";
 import { LANGUAGES } from "../../utils";
 import { changeLanguageApp } from "../../store/actions";
 import { withRouter } from "react-router";
@@ -12,10 +12,10 @@ class HomeHeader extends Component {
     super(props);
     this.state = {
       placeholderIndex: 0,
-      placeholderTexts: [
-        "Tìm kiếm chuyên khoa",
-        "Tìm kiếm cơ sở y tế",
-        "Tìm kiếm bác sĩ",
+      placeholderIds: [
+        "homeheader.search-specialty",
+        "homeheader.search-clinic",
+        "homeheader.search-doctor",
       ],
     };
   }
@@ -24,7 +24,7 @@ class HomeHeader extends Component {
     this.placeholderInterval = setInterval(() => {
       this.setState((prevState) => ({
         placeholderIndex:
-          (prevState.placeholderIndex + 1) % prevState.placeholderTexts.length,
+          (prevState.placeholderIndex + 1) % prevState.placeholderIds.length,
       }));
     }, 3000);
   }
@@ -62,11 +62,13 @@ class HomeHeader extends Component {
       this.props.history.push("/all-clinic");
     }
   };
+
   handleSearchClick = () => {
     if (this.props.history) {
       this.props.history.push("/search");
     }
   };
+
   handleViewBookingHistory = () => {
     if (this.props.history) {
       this.props.history.push("/booking-history");
@@ -74,8 +76,12 @@ class HomeHeader extends Component {
   };
 
   render() {
-    let { language } = this.props;
-    let { placeholderIndex, placeholderTexts } = this.state;
+    const { language, intl } = this.props;
+    const { placeholderIndex, placeholderIds } = this.state;
+
+    const currentPlaceholder = intl.formatMessage({
+      id: placeholderIds[placeholderIndex],
+    });
 
     return (
       <React.Fragment>
@@ -86,15 +92,12 @@ class HomeHeader extends Component {
               <img
                 className="header-logo"
                 src={logo}
-                onClick={() => this.returnToHome()}
+                onClick={this.returnToHome}
                 alt="logo"
               />
             </div>
             <div className="center-content">
-              <div
-                className="child-content"
-                onClick={() => this.handleViewSpecialty()}
-              >
+              <div className="child-content" onClick={this.handleViewSpecialty}>
                 <div>
                   <b>
                     <FormattedMessage id="homeheader.speciality" />
@@ -104,10 +107,7 @@ class HomeHeader extends Component {
                   <FormattedMessage id="homeheader.searchdoctor" />
                 </div>
               </div>
-              <div
-                className="child-content"
-                onClick={() => this.handleViewClinic()}
-              >
+              <div className="child-content" onClick={this.handleViewClinic}>
                 <div>
                   <b>
                     <FormattedMessage id="homeheader.health-facility" />
@@ -117,10 +117,7 @@ class HomeHeader extends Component {
                   <FormattedMessage id="homeheader.select-room" />
                 </div>
               </div>
-              <div
-                className="child-content"
-                onClick={() => this.handleViewDoctor()}
-              >
+              <div className="child-content" onClick={this.handleViewDoctor}>
                 <div>
                   <b>
                     <FormattedMessage id="homeheader.doctor" />
@@ -134,7 +131,7 @@ class HomeHeader extends Component {
             <div className="right-content">
               <div className="history" onClick={this.handleViewBookingHistory}>
                 <i className="fas fa-question-circle"></i>
-                Lịch hẹn
+                <FormattedMessage id="homeheader.history" />
               </div>
               <div
                 className={
@@ -173,15 +170,10 @@ class HomeHeader extends Component {
               </div>
               <div className="search" onClick={this.handleSearchClick}>
                 <i className="fas fa-search"></i>
-                <input
-                  type="text"
-                  placeholder={placeholderTexts[placeholderIndex]}
-                />
+                <input type="text" placeholder={currentPlaceholder} readOnly />
               </div>
             </div>
-            <div className="content-down">
-              {/* Nội dung banner content-down nếu cần */}
-            </div>
+            <div className="content-down">{/* Optional content */}</div>
           </div>
         )}
       </React.Fragment>
@@ -203,6 +195,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
+// Use injectIntl to access intl.formatMessage
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(HomeHeader)
+  connect(mapStateToProps, mapDispatchToProps)(injectIntl(HomeHeader))
 );

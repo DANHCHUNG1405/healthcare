@@ -9,8 +9,45 @@
     "fee": "Checkup package",
     "check-health": "General health check",
     "support": "Support",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "history": "Look up the history",
+    "search-specialty": "Search for specialty",
+    "search-clinic": "Search for clinic",
+    "search-doctor": "Search for doctor"
   },
+  "bookingHistory": {
+    "title": "View Booking History",
+    "enterEmail": "Enter your email",
+    "sendOtp": "Send OTP",
+    "sending": "Sending...",
+    "checkEmailOtp": "Please check your email and enter the OTP code:",
+    "enterOtp": "Enter OTP code",
+    "verifying": "Verifying...",
+    "verify": "Verify",
+    "resendEmail": "Re-enter email",
+    "loadingHistory": "Loading history...",
+    "noHistory": "No booking history found.",
+    "doctor": "Doctor",
+    "date": "Date",
+    "time": "Time",
+    "status": "Status",
+    "diagnosis": "Diagnosis",
+    "viewPrescription": "👉 View Prescription",
+    "newLookup": "New Lookup",
+    "close": "Close",
+    "errorEmailRequired": "Please enter your email!",
+    "errorOtpRequired": "Please enter OTP code!",
+    "otpInvalid": "Invalid OTP.",
+    "sendOtpError": "Error sending OTP.",
+    "verifyOtpError": "Error verifying OTP.",
+    "historyFetchError": "Error fetching history.",
+    "statusLabels": {
+      "S1": "Pending confirmation",
+      "S2": "Booked successfully",
+      "S3": "Completed"
+    }
+  },
+
   "banner": {
     "title1": "MEDICAL PLATFORM",
     "title2": "COMPREHENSIVE HEALTH CARE",
@@ -43,6 +80,7 @@
     }
   },
   "manage-user": {
+    "title": "Manage user",
     "add": "Add a new user",
     "email": "Email",
     "password": "Password",
@@ -56,12 +94,15 @@
     "image": "Avatar",
     "save": "Save user",
     "edit": "Edit user",
-    "wallet": "Wallet address"
+    "load": "Load picture"
   },
   "homepage": {
     "outstanding-doctor": "Last week's featured doctor",
     "more-infor": "More infor",
-    "specialty-popular": "Popular specialties"
+    "specialty-popular": "Popular specialties",
+    "medical-facility": "Major medical center",
+    "communication": "Public communication about healthcare",
+    "description": "HealthCare is a medical appointment booking app that helps patients easily schedule consultations with doctors online. With HealthCare, users can search for doctors by specialty, view detailed profiles, and book appointments based on real-time availability. The app sends instant booking confirmations and reminders to ensure patients never miss an appointment. For clinics, HealthCare simplifies doctor schedule management and reduces patient wait times. Designed with a user-friendly interface and strong data security, HealthCare enhances the overall healthcare experience for both patients and medical professionals."
   },
   "manage-schedule": {
     "title": "Manage doctor's examination plan",
@@ -96,6 +137,18 @@
       "btnCancel": "Cancel",
       "priceBooking": "Free booking",
       "price": "Price: "
+    },
+    "list": {
+      "doctor": "List of doctors",
+      "specialty": "List of specialties",
+      "clinic": "List of clinics"
+    },
+    "search": {
+      "all": "All",
+      "specialty": "Specialty",
+      "clinic": "Clinic",
+      "doctor": "Doctor",
+      "placeholder": "Search..."
     }
   },
   "admin": {
@@ -113,6 +166,41 @@
       "note": "Note",
       "specialty": "Specialty",
       "select-clinic": "Clinic"
+    },
+    "manage-clinic": {
+      "title": "Manage Clinic",
+      "nameClinic": "Clinic's name",
+      "addressClinic": "Clinic's address",
+      "pictureClinic": "Clinic's picture",
+      "save": "Save"
+    },
+    "manage-specialty": {
+      "title": "Manage Specialty",
+      "nameSpecialty": "Specialty's name",
+      "pictureSpecialty": "Specialty's picture",
+      "save": "Save"
+    }
+  },
+  "doctor": {
+    "manage-patient": {
+      "title": "Manage patient",
+      "select-date": "Select date",
+      "number": "Ordinal number",
+      "appointment": "Appointment",
+      "fullname": "Fullname",
+      "address": "Address",
+      "gender": "Gender",
+      "action": "Action",
+      "nodata": "No data",
+      "confirm": "Confirm"
+    },
+    "modal": {
+      "title": "Medical bill sent successfully",
+      "email": "Patient's Email",
+      "prescription": "Choose prescription file",
+      "diagnosis": "diagnosis",
+      "send": "Send",
+      "cancel": "Cancel"
     }
   }
 }

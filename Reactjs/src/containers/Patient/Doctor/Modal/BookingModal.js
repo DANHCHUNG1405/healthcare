@@ -266,7 +266,6 @@ class BookingModal extends Component {
                       onChange={this.handleOnchangeDatePicker}
                       className="form-control"
                       value={this.state.birthday}
-                      // minDate={yesterday}
                     />
                   </div>
                   <div className="col-6 form-group">
