@@ -20,6 +20,10 @@ module.exports = {
       prescription: {
         type: Sequelize.TEXT,
       },
+      bookingId: {
+        type: Sequelize.INTEGER,
+      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -2,9 +2,9 @@ import db from "../models";
 
 let saveRemedy = async (data) => {
   try {
-    const { email, patientName, diagnosis, prescription } = data;
+    const { email, patientName, diagnosis, prescription, bookingId } = data;
 
-    if (!email || !diagnosis || !prescription) {
+    if (!email || !diagnosis || !prescription || !bookingId) {
       return { errCode: 1, errMessage: "Missing required fields" };
     }
 
@@ -13,6 +13,7 @@ let saveRemedy = async (data) => {
       patientName,
       diagnosis,
       prescription,
+      bookingId,
     });
 
     return { errCode: 0, message: "Remedy saved successfully" };

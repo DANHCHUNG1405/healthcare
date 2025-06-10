@@ -78,7 +78,8 @@ let initWebRoutes = (app) => {
   );
   router.post("/api/send-otp", patientController.sendOTPToEmail);
   router.post("/api/verify-otp", patientController.verifyOTP);
-  router.post("/save-remedy", historyController.sendRemedyToHistory);
+  router.post("/api/save-remedy", historyController.sendRemedyToHistory);
+
   router.get("/history-by-email", historyController.getRemedyHistoryByEmail);
 
   return app.use("/", router);

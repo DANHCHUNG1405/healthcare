@@ -161,18 +161,25 @@ let getBookingHistoryByEmail = async (email) => {
       include: [
         {
           model: db.User,
-          as: "doctorData", // bác sĩ
+          as: "doctorData",
           attributes: ["firstName", "lastName"],
         },
         {
           model: db.Allcode,
-          as: "timeTypeDataPatient", // chú ý alias đúng
+          as: "timeTypeDataPatient",
           attributes: ["valueVi", "valueEn"],
+        },
+        {
+          model: db.History,
+          as: "remedyData", // alias này tùy bạn định nghĩa trong association
+          attributes: ["diagnosis", "prescription"],
+          required: false,
         },
       ],
       order: [["date", "DESC"]],
       raw: false,
     });
+
     return {
       errCode: 0,
       data: bookings,
