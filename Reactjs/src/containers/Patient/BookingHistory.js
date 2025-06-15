@@ -6,6 +6,7 @@ import {
   getBookingHistoryByEmail,
   sendOtpToEmail,
   verifyOtpCode,
+  cancelBookingById,
 } from "../../services/userService";
 
 class BookingHistory extends Component {
@@ -19,17 +20,26 @@ class BookingHistory extends Component {
       history: [],
       loading: false,
       errMsg: "",
-      showModal: false,
-      modalImage: "",
+      showCancelModal: false,
+      selectedBookingId: null,
     };
   }
-
-  handleChangeEmail = (event) => {
-    this.setState({ email: event.target.value });
+  openCancelModal = (bookingId) => {
+    this.setState({
+      showCancelModal: true,
+      selectedBookingId: bookingId,
+    });
   };
 
-  handleChangeOtp = (event) => {
-    this.setState({ otp: event.target.value });
+  closeCancelModal = () => {
+    this.setState({
+      showCancelModal: false,
+      selectedBookingId: null,
+    });
+  };
+
+  handleChange = (field) => (event) => {
+    this.setState({ [field]: event.target.value });
   };
 
   sendOtp = async () => {
@@ -37,18 +47,16 @@ class BookingHistory extends Component {
     const { intl } = this.props;
 
     if (!email) {
-      this.setState({
+      return this.setState({
         errMsg: intl.formatMessage({ id: "bookingHistory.errorEmailRequired" }),
       });
-      return;
     }
 
     this.setState({ loading: true, errMsg: "" });
-
     try {
       const res = await sendOtpToEmail(email);
       if (res.errCode === 0) {
-        this.setState({ step: "otp", errMsg: "" });
+        this.setState({ step: "otp" });
       } else {
         this.setState({
           errMsg:
@@ -70,19 +78,17 @@ class BookingHistory extends Component {
     const { intl } = this.props;
 
     if (!otp) {
-      this.setState({
+      return this.setState({
         errMsg: intl.formatMessage({ id: "bookingHistory.errorOtpRequired" }),
       });
-      return;
     }
 
-    this.setState({ loading: true, errMsg: "" });
-
+    this.setState({ loading: true });
     try {
       const res = await verifyOtpCode(email, otp);
       if (res.errCode === 0) {
-        this.setState({ verified: true, errMsg: "" });
-        await this.handleLookup();
+        this.setState({ verified: true });
+        await this.fetchHistory();
         this.setState({ step: "result" });
       } else {
         this.setState({
@@ -100,12 +106,11 @@ class BookingHistory extends Component {
     }
   };
 
-  handleLookup = async () => {
+  fetchHistory = async () => {
     const { email } = this.state;
     const { intl } = this.props;
 
-    this.setState({ loading: true, errMsg: "", history: [] });
-
+    this.setState({ loading: true, history: [] });
     try {
       const res = await getBookingHistoryByEmail(email);
       if (res.errCode === 0) {
@@ -126,184 +131,55 @@ class BookingHistory extends Component {
     }
   };
 
-  openImageModal = (image) => {
-    this.setState({ showModal: true, modalImage: image });
-  };
-
-  closeImageModal = () => {
-    this.setState({ showModal: false, modalImage: "" });
-  };
-  renderEmailStep = () => {
-    const { email, loading } = this.state;
-
-    return (
-      <>
-        <input
-          type="email"
-          placeholder={this.props.intl.formatMessage({
-            id: "bookingHistory.enterEmail",
-          })}
-          value={email}
-          onChange={this.handleChangeEmail}
-        />
-        <button onClick={this.sendOtp} disabled={loading}>
-          {loading
-            ? this.props.intl.formatMessage({ id: "bookingHistory.sending" })
-            : this.props.intl.formatMessage({ id: "bookingHistory.sendOtp" })}
-        </button>
-      </>
-    );
-  };
-  renderOtpStep = () => {
-    const { otp, loading } = this.state;
-
-    return (
-      <>
-        <p>
-          <FormattedMessage id="bookingHistory.checkEmailOtp" />
-        </p>
-        <input
-          type="text"
-          placeholder={this.props.intl.formatMessage({
-            id: "bookingHistory.enterOtp",
-          })}
-          value={otp}
-          onChange={this.handleChangeOtp}
-        />
-        <button onClick={this.verifyOtp} disabled={loading}>
-          {loading
-            ? this.props.intl.formatMessage({ id: "bookingHistory.verifying" })
-            : this.props.intl.formatMessage({ id: "bookingHistory.verify" })}
-        </button>
-        <button
-          onClick={() => this.setState({ step: "email", errMsg: "", otp: "" })}
-          className="secondary-button"
-        >
-          <FormattedMessage id="bookingHistory.resendEmail" />
-        </button>
-      </>
-    );
-  };
-
-  renderResultStep = () => {
-    const { loading, history } = this.state;
+  handleCancelBooking = async () => {
+    const { selectedBookingId, email } = this.state;
     const { intl } = this.props;
 
-    return (
-      <>
-        {loading && (
-          <p>
-            <FormattedMessage id="bookingHistory.loadingHistory" />
-          </p>
-        )}
-        {!loading && history.length === 0 && (
-          <p>
-            <FormattedMessage id="bookingHistory.noHistory" />
-          </p>
-        )}
+    this.setState({ loading: true, showCancelModal: false });
 
-        <div className="booking-list">
-          {history.map((item) => (
-            <div key={item.id} className="booking-item">
-              <p>
-                <strong>
-                  <FormattedMessage id="bookingHistory.doctor" />:
-                </strong>{" "}
-                {item.doctorData?.lastName} {item.doctorData?.firstName}
-              </p>
-              <p>
-                <strong>
-                  <FormattedMessage id="bookingHistory.date" />:
-                </strong>{" "}
-                {item.date}
-              </p>
-              <p>
-                <strong>
-                  <FormattedMessage id="bookingHistory.time" />:
-                </strong>{" "}
-                {item.timeTypeDataPatient?.valueVi}
-              </p>
-              <p>
-                <strong>
-                  <FormattedMessage id="bookingHistory.status" />:
-                </strong>{" "}
-                {intl.formatMessage({
-                  id: `bookingHistory.statusLabels.${item.statusId}`,
-                })}
-              </p>
+    try {
+      const res = await cancelBookingById({
+        bookingId: selectedBookingId,
+        email: email,
+      });
+      if (res.errCode === 0) {
+        await this.fetchHistory();
+      } else {
+        alert(
+          res.errMessage ||
+            intl.formatMessage({ id: "bookingHistory.cancelFailed" })
+        );
+      }
+    } catch (e) {
+      alert(intl.formatMessage({ id: "bookingHistory.cancelError" }));
+    } finally {
+      this.setState({ loading: false, selectedBookingId: null });
+    }
+  };
 
-              {item.statusId === "S3" && (
-                <>
-                  <p>
-                    <strong>
-                      <FormattedMessage id="bookingHistory.diagnosis" />:
-                    </strong>{" "}
-                    {item.remedyData?.diagnosis || "Không có"}
-                  </p>
-                  {item.remedyData?.medications?.length > 0 && (
-                    <div className="prescription-detail">
-                      <p>
-                        <strong>
-                          <FormattedMessage id="bookingHistory.prescription" />:
-                        </strong>
-                      </p>
-                      {Array.isArray(item.remedyData?.medications) &&
-                      item.remedyData.medications.length > 0 ? (
-                        <ul>
-                          {item.remedyData.medications.map((med, idx) => (
-                            <li key={idx}>
-                              <p>
-                                <strong>{med.name}</strong>
-                              </p>
-                              <p>
-                                <em>Liều dùng:</em> {med.dose}
-                              </p>
-                              <p>
-                                <em>Số lần/ngày:</em> {med.frequency}
-                              </p>
-                              <p>
-                                <em>Ghi chú:</em> {med.note}
-                              </p>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>
-                          <FormattedMessage
-                            id="bookingHistory.noMedications"
-                            defaultMessage="Không có thuốc kê đơn"
-                          />
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <button
-          onClick={() =>
-            this.setState({
-              step: "email",
-              email: "",
-              otp: "",
-              verified: false,
-              history: [],
-              errMsg: "",
-            })
-          }
-          className="secondary-button"
-        >
-          <FormattedMessage id="bookingHistory.newLookup" />
-        </button>
-      </>
-    );
+  reset = () => {
+    this.setState({
+      step: "email",
+      email: "",
+      otp: "",
+      verified: false,
+      history: [],
+      errMsg: "",
+    });
   };
 
   render() {
-    const { step, errMsg } = this.state;
+    const {
+      step,
+      email,
+      otp,
+      errMsg,
+      loading,
+      history,
+      showCancelModal,
+      selectedBookingId,
+    } = this.state;
+    const { intl } = this.props;
 
     return (
       <>
@@ -314,9 +190,192 @@ class BookingHistory extends Component {
           </h2>
           {errMsg && <p className="error-message">{errMsg}</p>}
 
-          {step === "email" && this.renderEmailStep()}
-          {step === "otp" && this.renderOtpStep()}
-          {step === "result" && this.renderResultStep()}
+          {step === "email" && (
+            <>
+              <input
+                type="email"
+                placeholder={intl.formatMessage({
+                  id: "bookingHistory.enterEmail",
+                })}
+                value={email}
+                onChange={this.handleChange("email")}
+              />
+              <button onClick={this.sendOtp} disabled={loading}>
+                {loading
+                  ? intl.formatMessage({ id: "bookingHistory.sending" })
+                  : intl.formatMessage({ id: "bookingHistory.sendOtp" })}
+              </button>
+            </>
+          )}
+
+          {step === "otp" && (
+            <>
+              <p>
+                <FormattedMessage id="bookingHistory.checkEmailOtp" />
+              </p>
+              <input
+                type="text"
+                placeholder={intl.formatMessage({
+                  id: "bookingHistory.enterOtp",
+                })}
+                value={otp}
+                onChange={this.handleChange("otp")}
+              />
+              <button onClick={this.verifyOtp} disabled={loading}>
+                {loading
+                  ? intl.formatMessage({ id: "bookingHistory.verifying" })
+                  : intl.formatMessage({ id: "bookingHistory.verify" })}
+              </button>
+              <button onClick={this.reset} className="secondary-button">
+                <FormattedMessage id="bookingHistory.resendEmail" />
+              </button>
+            </>
+          )}
+
+          {step === "result" && (
+            <>
+              {loading && (
+                <p>
+                  <FormattedMessage id="bookingHistory.loadingHistory" />
+                </p>
+              )}
+              {!loading && history.length === 0 && (
+                <p>
+                  <FormattedMessage id="bookingHistory.noHistory" />
+                </p>
+              )}
+
+              <div className="booking-list">
+                {history.map((item) => (
+                  <div key={item.id} className="booking-item">
+                    <p>
+                      <strong>
+                        <FormattedMessage id="bookingHistory.doctor" />:
+                      </strong>{" "}
+                      {item.doctorData?.lastName} {item.doctorData?.firstName}
+                    </p>
+                    <p>
+                      <strong>
+                        <FormattedMessage id="bookingHistory.date" />:
+                      </strong>{" "}
+                      {item.date}
+                    </p>
+                    <p>
+                      <strong>
+                        <FormattedMessage id="bookingHistory.time" />:
+                      </strong>{" "}
+                      {item.timeTypeDataPatient?.valueVi}
+                    </p>
+                    <p>
+                      <strong>
+                        <FormattedMessage id="bookingHistory.status" />:
+                      </strong>{" "}
+                      {intl.formatMessage({
+                        id: `bookingHistory.statusLabels.${item.statusId}`,
+                      })}
+                    </p>
+
+                    {item.statusId === "S2" && (
+                      <button
+                        className="secondary-button"
+                        onClick={() => this.openCancelModal(item.id)}
+                      >
+                        <FormattedMessage id="bookingHistory.cancelBooking" />
+                      </button>
+                    )}
+
+                    {item.statusId === "S3" && (
+                      <>
+                        <p>
+                          <strong>
+                            <FormattedMessage id="bookingHistory.diagnosis" />:
+                          </strong>{" "}
+                          {item.remedyData?.diagnosis || "Không có"}
+                        </p>
+                        {item.remedyData?.medications?.length > 0 ? (
+                          <div className="prescription-detail">
+                            <p>
+                              <strong>
+                                <FormattedMessage id="bookingHistory.prescription" />
+                                :
+                              </strong>
+                            </p>
+                            <ul>
+                              {item.remedyData.medications.map((med, idx) => (
+                                <li key={idx}>
+                                  <p>
+                                    <strong>{med.name}</strong>
+                                  </p>
+                                  <p>
+                                    <em>Liều dùng:</em> {med.dose}
+                                  </p>
+                                  <p>
+                                    <em>Số lần/ngày:</em> {med.frequency}
+                                  </p>
+                                  <p>
+                                    <em>Ghi chú:</em> {med.note}
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <p>
+                            <FormattedMessage
+                              id="bookingHistory.noMedications"
+                              defaultMessage="Không có thuốc kê đơn"
+                            />
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button onClick={this.reset} className="secondary-button">
+                <FormattedMessage id="bookingHistory.newLookup" />
+              </button>
+            </>
+          )}
+          {showCancelModal && (
+            <div className="custom-modal-overlay">
+              <div className="custom-modal">
+                <h3>
+                  <FormattedMessage
+                    id="bookingHistory.confirmTitle"
+                    defaultMessage="Xác nhận hủy lịch khám"
+                  />
+                </h3>
+                <p>
+                  <FormattedMessage
+                    id="bookingHistory.confirmCancelMessage"
+                    defaultMessage="Bạn có chắc chắn muốn hủy lịch khám này không?"
+                  />
+                </p>
+                <div className="modal-actions">
+                  <button
+                    className="secondary-button"
+                    onClick={this.closeCancelModal}
+                  >
+                    <FormattedMessage
+                      id="bookingHistory.cancel"
+                      defaultMessage="Không"
+                    />
+                  </button>
+                  <button
+                    className="danger-button"
+                    onClick={this.handleCancelBooking}
+                  >
+                    <FormattedMessage
+                      id="bookingHistory.confirm"
+                      defaultMessage="Có, hủy lịch"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </>
     );

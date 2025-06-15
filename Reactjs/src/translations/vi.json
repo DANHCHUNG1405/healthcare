@@ -46,8 +46,15 @@
     "statusLabels": {
       "S1": "Chờ xác nhận",
       "S2": "Đã đặt thành công",
-      "S3": "Đã hoàn tất"
-    }
+      "S3": "Đã hoàn tất",
+      "S4": "Đã hủy"
+    },
+    "cancelBooking": "Hủy lịch",
+    "cancelBooking": "Cancel booking",
+    "confirmTitle": "Xác nhận hủy lịch khám",
+    "confirmCancelMessage": "Bạn có chắc chắn muốn hủy lịch khám này không?",
+    "cancel": "Không",
+    "confirm": "Có"
   },
 
   "banner": {

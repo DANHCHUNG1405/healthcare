@@ -127,6 +127,9 @@ const verifyOtpCode = (email, otp) => {
 const saveRemedy = (data) => {
   return axios.post("/api/save-remedy", data);
 };
+const cancelBookingById = (data) => {
+  return axios.post("/api/cancel-booking", data);
+};
 
 export {
   handleLoginApi,
@@ -158,4 +161,5 @@ export {
   sendOtpToEmail,
   verifyOtpCode,
   saveRemedy,
+  cancelBookingById,
 };

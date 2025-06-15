@@ -46,8 +46,13 @@
     "statusLabels": {
       "S1": "Pending Confirmation",
       "S2": "Booked Successfully",
-      "S3": "Completed"
-    }
+      "S3": "Completed",
+      "S4": "Cancelled"
+    },
+    "confirmTitle": "Confirm Appointment Cancellation",
+    "confirmCancelMessage": "Are you sure you want to cancel this appointment?",
+    "cancel": "No",
+    "confirm": "Yes"
   },
 
   "banner": {
