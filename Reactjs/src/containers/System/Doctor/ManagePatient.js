@@ -87,7 +87,7 @@ class ManagePatient extends Component {
     // Dữ liệu chung
     const payload = {
       email: dataChild.email,
-      prescription: dataChild.prescription,
+      medications: dataChild.medications,
       doctorId: dataModal.doctorId,
       patientId: dataModal.patientId,
       timeType: dataModal.timeType,

@@ -133,7 +133,6 @@ class BookingHistory extends Component {
   closeImageModal = () => {
     this.setState({ showModal: false, modalImage: "" });
   };
-
   renderEmailStep = () => {
     const { email, loading } = this.state;
 
@@ -155,7 +154,6 @@ class BookingHistory extends Component {
       </>
     );
   };
-
   renderOtpStep = () => {
     const { otp, loading } = this.state;
 
@@ -191,10 +189,6 @@ class BookingHistory extends Component {
     const { loading, history } = this.state;
     const { intl } = this.props;
 
-    const statusLabels = intl.formatMessage({
-      id: "bookingHistory.statusLabels",
-    });
-
     return (
       <>
         {loading && (
@@ -207,6 +201,7 @@ class BookingHistory extends Component {
             <FormattedMessage id="bookingHistory.noHistory" />
           </p>
         )}
+
         <div className="booking-list">
           {history.map((item) => (
             <div key={item.id} className="booking-item">
@@ -245,21 +240,49 @@ class BookingHistory extends Component {
                     </strong>{" "}
                     {item.remedyData?.diagnosis || "Không có"}
                   </p>
-                  {item.remedyData?.prescription && (
-                    <button
-                      onClick={() =>
-                        this.openImageModal(item.remedyData.prescription)
-                      }
-                      className="view-prescription-link"
-                    >
-                      <FormattedMessage id="bookingHistory.viewPrescription" />
-                    </button>
+                  {item.remedyData?.medications?.length > 0 && (
+                    <div className="prescription-detail">
+                      <p>
+                        <strong>
+                          <FormattedMessage id="bookingHistory.prescription" />:
+                        </strong>
+                      </p>
+                      {Array.isArray(item.remedyData?.medications) &&
+                      item.remedyData.medications.length > 0 ? (
+                        <ul>
+                          {item.remedyData.medications.map((med, idx) => (
+                            <li key={idx}>
+                              <p>
+                                <strong>{med.name}</strong>
+                              </p>
+                              <p>
+                                <em>Liều dùng:</em> {med.dose}
+                              </p>
+                              <p>
+                                <em>Số lần/ngày:</em> {med.frequency}
+                              </p>
+                              <p>
+                                <em>Ghi chú:</em> {med.note}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>
+                          <FormattedMessage
+                            id="bookingHistory.noMedications"
+                            defaultMessage="Không có thuốc kê đơn"
+                          />
+                        </p>
+                      )}
+                    </div>
                   )}
                 </>
               )}
             </div>
           ))}
         </div>
+
         <button
           onClick={() =>
             this.setState({
@@ -275,17 +298,6 @@ class BookingHistory extends Component {
         >
           <FormattedMessage id="bookingHistory.newLookup" />
         </button>
-
-        {this.state.showModal && (
-          <div className="image-modal-overlay" onClick={this.closeImageModal}>
-            <div className="image-modal" onClick={(e) => e.stopPropagation()}>
-              <img src={this.state.modalImage} alt="Đơn thuốc" />
-              <button onClick={this.closeImageModal}>
-                <FormattedMessage id="bookingHistory.close" />
-              </button>
-            </div>
-          </div>
-        )}
       </>
     );
   };

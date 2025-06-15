@@ -2,17 +2,17 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./RemedyModal.scss";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
-import { CommonUtils } from "../../../utils";
 import { FormattedMessage } from "react-intl";
+
 class RemedyModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
-      prescription: "",
       diagnosis: "",
       patientName: "",
       bookingId: "",
+      medications: [{ name: "", dose: "", frequency: "", note: "" }],
     };
   }
 
@@ -36,29 +36,34 @@ class RemedyModal extends Component {
     }
   }
 
-  handleOnchangeEmail = (event) => {
+  handleInputChange = (event, index, field) => {
+    const newMedications = [...this.state.medications];
+    newMedications[index][field] = event.target.value;
+    this.setState({ medications: newMedications });
+  };
+
+  handleAddMedication = () => {
     this.setState({
-      email: event.target.value,
+      medications: [
+        ...this.state.medications,
+        { name: "", dose: "", frequency: "", note: "" },
+      ],
     });
   };
 
-  handleOnchangeImage = async (event) => {
-    let file = event.target.files?.[0];
-    if (file) {
-      let base64 = await CommonUtils.getBase64(file);
-      this.setState({
-        prescription: base64, // ✅ dùng prescription
-      });
-    }
+  handleRemoveMedication = (index) => {
+    const medications = [...this.state.medications];
+    medications.splice(index, 1);
+    this.setState({ medications });
   };
 
   handleSendRemedy = () => {
-    console.log("Sending remedy with data:", this.state);
     this.props.sendRemedy(this.state);
   };
 
   render() {
     let { isOpenModal, closeRemedyModal } = this.props;
+    const { email, diagnosis, medications } = this.state;
 
     return (
       <Modal
@@ -77,37 +82,100 @@ class RemedyModal extends Component {
         </div>
         <ModalBody>
           <div className="row">
-            <div className="col-6 form-group">
+            <div className="col-12 form-group">
               <label>
                 <FormattedMessage id="doctor.modal.email" />
               </label>
               <input
                 className="form-control"
                 type="email"
-                value={this.state.email}
-                onChange={this.handleOnchangeEmail}
+                value={email}
+                onChange={(e) => this.setState({ email: e.target.value })}
               />
             </div>
-            <div className="col-6 form-group">
-              <label>
-                <FormattedMessage id="doctor.modal.prescription" />
-              </label>
-              <input
-                className="form-control-file"
-                type="file"
-                onChange={this.handleOnchangeImage}
-              />
-            </div>
-            <div className="col-12 form-group mt-3">
+            <div className="col-12 form-group">
               <label>
                 <FormattedMessage id="doctor.modal.diagnosis" />
               </label>
               <textarea
                 className="form-control"
                 rows="3"
-                value={this.state.diagnosis}
+                value={diagnosis}
                 onChange={(e) => this.setState({ diagnosis: e.target.value })}
               ></textarea>
+            </div>
+
+            <div className="col-12">
+              <label>
+                <strong>Đơn thuốc</strong>
+              </label>
+              {medications.map((med, index) => (
+                <div
+                  className="medication-card mb-3 p-3 border rounded"
+                  key={index}
+                >
+                  <div className="form-row">
+                    <div className="col-md-3 form-group">
+                      <label>Tên thuốc</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={med.name}
+                        onChange={(e) =>
+                          this.handleInputChange(e, index, "name")
+                        }
+                      />
+                    </div>
+                    <div className="col-md-3 form-group">
+                      <label>Liều dùng</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={med.dose}
+                        onChange={(e) =>
+                          this.handleInputChange(e, index, "dose")
+                        }
+                      />
+                    </div>
+                    <div className="col-md-3 form-group">
+                      <label>Số lần/ngày</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={med.frequency}
+                        onChange={(e) =>
+                          this.handleInputChange(e, index, "frequency")
+                        }
+                      />
+                    </div>
+                    <div className="col-md-3 form-group">
+                      <label>Ghi chú</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={med.note}
+                        onChange={(e) =>
+                          this.handleInputChange(e, index, "note")
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => this.handleRemoveMedication(index)}
+                    >
+                      Xóa thuốc
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button
+                className="btn btn-success mt-2"
+                onClick={this.handleAddMedication}
+              >
+                + Thêm thuốc
+              </button>
             </div>
           </div>
         </ModalBody>
