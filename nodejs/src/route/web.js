@@ -80,8 +80,11 @@ let initWebRoutes = (app) => {
   router.post("/api/verify-otp", patientController.verifyOTP);
   router.post("/api/save-remedy", historyController.sendRemedyToHistory);
 
-  router.get("/history-by-email", historyController.getRemedyHistoryByEmail);
-
+  router.get(
+    "/api/history-by-email",
+    historyController.getRemedyHistoryByEmail
+  );
+  router.post("/api/cancel-booking", patientController.cancelBooking);
   return app.use("/", router);
 };
 module.exports = initWebRoutes;

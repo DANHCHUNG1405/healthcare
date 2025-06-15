@@ -108,46 +108,58 @@ const postVerifyBookAppointment = async (data) => {
       where: {
         doctorId: data.doctorId,
         token: data.token,
-        statusId: "S1", // Chưa xác nhận
+        statusId: "S1", // chưa xác nhận
       },
       raw: false,
     });
 
-    if (appointment) {
-      // Cập nhật trạng thái xác nhận lịch khám
-      appointment.statusId = "S2";
-      await appointment.save();
-
-      // Tìm lịch tương ứng trong bảng Schedule
-      const schedule = await db.Schedule.findOne({
-        where: {
-          doctorId: appointment.doctorId,
-          date: appointment.date,
-          timeType: appointment.timeType,
-        },
-        raw: false,
-      });
-
-      // Nếu tồn tại, thì xoá lịch
-      if (schedule) {
-        await schedule.destroy();
-      }
-
-      return {
-        errCode: 0,
-        errMessage: "Verify booking success and schedule deleted!",
-      };
-    } else {
+    if (!appointment) {
       return {
         errCode: 2,
         errMessage: "Appointment has been activated or does not exist",
       };
     }
+
+    const schedule = await db.Schedule.findOne({
+      where: {
+        doctorId: appointment.doctorId,
+        date: appointment.date,
+        timeType: appointment.timeType,
+      },
+      raw: false,
+    });
+
+    if (!schedule) {
+      return {
+        errCode: 3,
+        errMessage: "Schedule not found",
+      };
+    }
+
+    if (schedule.currentNumber >= schedule.maxNumber) {
+      return {
+        errCode: 4,
+        errMessage: "This time slot is fully booked",
+      };
+    }
+
+    // Xác nhận booking
+    appointment.statusId = "S2";
+    await appointment.save();
+
+    // Tăng currentNumber
+    schedule.currentNumber += 1;
+    await schedule.save();
+
+    return {
+      errCode: 0,
+      errMessage: "Verify booking success!",
+    };
   } catch (error) {
     console.error("Error in postVerifyBookAppointment:", error);
     return {
       errCode: -1,
-      errMessage: "Error from server...",
+      errMessage: "Server error",
     };
   }
 };
@@ -302,10 +314,79 @@ let verifyOTP = async (email, otp) => {
     };
   }
 };
+let cancelBooking = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.bookingId || !data.email) {
+        return resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters!",
+        });
+      }
+
+      // Tìm booking
+      let booking = await db.Booking.findOne({
+        where: { id: data.bookingId },
+        raw: false,
+      });
+
+      if (!booking) {
+        return resolve({
+          errCode: 2,
+          errMessage: "Booking not found.",
+        });
+      }
+
+      // Xác minh đúng email của người đặt
+      let user = await db.User.findOne({
+        where: { id: booking.patientId, email: data.email },
+        attributes: ["id", "email"],
+        raw: false,
+      });
+
+      if (!user) {
+        return resolve({
+          errCode: 3,
+          errMessage: "Access denied: email does not match.",
+        });
+      }
+
+      // Tìm lịch khám liên quan
+      let schedule = await db.Schedule.findOne({
+        where: {
+          doctorId: booking.doctorId,
+          date: booking.date,
+          timeType: booking.timeType,
+        },
+        raw: false, // cần để gọi được save()
+      });
+
+      // Giảm số lượng đặt nếu còn > 0
+      if (schedule && schedule.currentNumber > 0) {
+        schedule.currentNumber -= 1;
+        await schedule.save();
+      }
+
+      // ❗ Cập nhật trạng thái của lịch khám thành S4 (đã hủy)
+      booking.statusId = "S4";
+      await booking.save();
+
+      resolve({
+        errCode: 0,
+        errMessage: "Booking has been cancelled and schedule restored.",
+      });
+    } catch (error) {
+      console.error("cancelBooking error:", error);
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   postBookAppointment,
   postVerifyBookAppointment,
   getBookingHistoryByEmail,
   sendOTPToEmail,
   verifyOTP,
+  cancelBooking,
 };

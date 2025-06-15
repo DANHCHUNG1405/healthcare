@@ -60,11 +60,23 @@ let verifyOTP = async (req, res) => {
     return res.status(500).json({ errCode: -1, errMessage: "Server error" });
   }
 };
-
+let cancelBooking = async (req, res) => {
+  try {
+    let response = await patientService.cancelBooking(req.body);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("cancelBooking error:", error);
+    return res.status(500).json({
+      errCode: -1,
+      errMessage: "Error from the server",
+    });
+  }
+};
 module.exports = {
   postBookAppointment: postBookAppointment,
   postVerifyBookAppointment: postVerifyBookAppointment,
   getBookingHistoryByEmail: getBookingHistoryByEmail,
   sendOTPToEmail: sendOTPToEmail,
   verifyOTP: verifyOTP,
+  cancelBooking: cancelBooking,
 };

@@ -230,113 +230,111 @@ let getDetailDoctorById = (inputId) => {
   });
 };
 
-let bulkCreateSchedule = (data) => {
+const bulkCreateSchedule = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.arrSchedule || !data.doctorId || !data.formatedDate) {
-        resolve({
+        return resolve({
           errCode: 1,
           errMessage: "Missing required parameter!",
         });
-      } else {
-        let schedule = data.arrSchedule;
+      }
 
-        // Gán maxNumber và chuyển date từ chuỗi string => Date object rồi thành chuỗi "YYYY-MM-DD"
-        if (schedule && schedule.length > 0) {
-          schedule = schedule.map((item) => {
-            item.maxNumber = MAX_NUMBER_SCHEDULE;
+      let schedule = data.arrSchedule;
 
-            // Nếu ngày là chuỗi, chuyển thành Date object và định dạng lại
-            if (!Date.parse(item.date)) {
-              return reject({ errCode: 2, errMessage: "Invalid date format" });
-            }
-            item.date = new Date(item.date).toISOString().split("T")[0]; // Chuyển thành "YYYY-MM-DD"
-            return item;
-          });
-        }
+      // Gán maxNumber = 2 và currentNumber = 0, chuẩn hóa định dạng ngày
+      if (schedule && schedule.length > 0) {
+        schedule = schedule.map((item) => {
+          if (!Date.parse(item.date)) {
+            reject({ errCode: 2, errMessage: "Invalid date format" });
+          }
 
-        // Lấy các lịch đã tồn tại từ DB
-        let existing = await db.Schedule.findAll({
-          where: { doctorId: data.doctorId, date: data.formatedDate },
-          attributes: ["timeType", "date", "doctorId", "maxNumber"],
-        });
-
-        // Convert date từ DB thành timestamp để so sánh
-        if (existing && existing.length > 0) {
-          existing = existing.map((item) => {
-            item.date = item.date; // giữ nguyên string, không chuyển timestamp
-            return item;
-          });
-        }
-
-        // Tìm các lịch chưa tồn tại để tạo mới
-        let toCreate = _.differenceWith(schedule, existing, (a, b) => {
-          return a.timeType === b.timeType && a.date === b.date; // So sánh ngày dưới dạng string
-        });
-
-        // Lưu các lịch mới
-        if (toCreate && toCreate.length > 0) {
-          await db.Schedule.bulkCreate(toCreate);
-        }
-
-        resolve({
-          errCode: 0,
-          errMessage: "OK",
+          return {
+            ...item,
+            maxNumber: 1,
+            currentNumber: 0,
+            doctorId: data.doctorId,
+            date: new Date(item.date).toISOString().split("T")[0], // "YYYY-MM-DD"
+          };
         });
       }
+
+      // Lấy các lịch đã có để không tạo trùng
+      let existing = await db.Schedule.findAll({
+        where: {
+          doctorId: data.doctorId,
+          date: data.formatedDate,
+        },
+        attributes: ["timeType", "date", "doctorId"],
+        raw: true,
+      });
+
+      // Lọc ra các lịch chưa có để tạo mới
+      let toCreate = _.differenceWith(schedule, existing, (a, b) => {
+        return a.timeType === b.timeType && a.date === b.date;
+      });
+
+      if (toCreate.length > 0) {
+        await db.Schedule.bulkCreate(toCreate);
+      }
+
+      resolve({
+        errCode: 0,
+        errMessage: "OK",
+      });
     } catch (error) {
       reject(error);
     }
   });
 };
 
-let getScheduleByDate = (doctorId, date) => {
+const getScheduleByDate = (doctorId, date) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!doctorId || !date) {
-        resolve({
+        return resolve({
           errCode: 1,
           errMessage: "Missing required parameters",
         });
-      } else {
-        // Kiểm tra tính hợp lệ của ngày (format: YYYY-MM-DD)
-        let parsedDate = new Date(date);
-        if (isNaN(parsedDate.getTime())) {
-          resolve({
-            errCode: 1,
-            errMessage: "Invalid date format. Please use YYYY-MM-DD.",
-          });
-          return;
-        }
+      }
 
-        let dataSchedule = await db.Schedule.findAll({
-          where: {
-            doctorId: doctorId,
-            date: parsedDate.toISOString().split("T")[0], // ✅ Truy vấn đúng theo định dạng DB lưu
-          },
-          include: [
-            {
-              model: db.Allcode,
-              as: "timeTypeData",
-              attributes: ["valueEn", "valueVi"],
-            },
-            {
-              model: db.User,
-              as: "doctorData",
-              attributes: ["firstName", "lastName"],
-            },
-          ],
-          raw: false,
-          nest: true,
-        });
-
-        if (!dataSchedule) dataSchedule = [];
-
-        resolve({
-          errCode: 0,
-          data: dataSchedule,
+      let parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        return resolve({
+          errCode: 1,
+          errMessage: "Invalid date format. Please use YYYY-MM-DD.",
         });
       }
+
+      const dataSchedule = await db.Schedule.findAll({
+        where: {
+          doctorId: doctorId,
+          date: parsedDate.toISOString().split("T")[0],
+          // 👉 Thêm điều kiện này để chỉ lấy lịch còn trống
+          currentNumber: {
+            [db.Sequelize.Op.lt]: db.Sequelize.col("maxNumber"),
+          },
+        },
+        include: [
+          {
+            model: db.Allcode,
+            as: "timeTypeData",
+            attributes: ["valueEn", "valueVi"],
+          },
+          {
+            model: db.User,
+            as: "doctorData",
+            attributes: ["firstName", "lastName"],
+          },
+        ],
+        raw: false,
+        nest: true,
+      });
+
+      resolve({
+        errCode: 0,
+        data: dataSchedule || [],
+      });
     } catch (error) {
       reject(error);
     }
