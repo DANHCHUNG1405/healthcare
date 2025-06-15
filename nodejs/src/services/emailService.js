@@ -1,9 +1,9 @@
+"use strict";
 require("dotenv").config();
 import nodemailer from "nodemailer";
 import { encode } from "html-entities";
 
 let sendSimpleEmail = async (dataSend) => {
-  console.log("Data to send email:", dataSend);
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -66,18 +66,43 @@ let getBodyHTMLEmail = (dataSend) => {
 };
 
 let getBodyHTMLEmailRemedy = (dataSend) => {
-  let { patientName, diagnosis } = dataSend;
+  let { patientName, diagnosis, medications } = dataSend;
   patientName = encode(patientName);
   diagnosis = encode(diagnosis || "");
+
+  let meds = [];
+  try {
+    meds = JSON.parse(medications || "[]");
+  } catch (e) {
+    meds = [];
+  }
+
+  let medicationsHtml = meds
+    .map((med) => {
+      const name = encode(med.name || "");
+      const dose = encode(med.dose || "");
+      const frequency = encode(med.frequency || "");
+      const note = encode(med.note || "");
+
+      return `
+        <li>
+          <strong>${name}</strong><br/>
+          <em>Liều dùng:</em> ${dose}<br/>
+          <em>Số lần/ngày:</em> ${frequency}<br/>
+          <em>Ghi chú:</em> ${note}
+        </li>
+      `;
+    })
+    .join("");
 
   let result = "";
   if (dataSend.language === "vi") {
     result = `
       <h3>Xin chào ${patientName}!</h3>
       <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên HealthCare</p>
-      <p>Thông tin đơn thuốc/hóa đơn được gửi trong file đính kèm</p>
       <p><b>Chẩn đoán:</b> ${diagnosis}</p>
-
+      <p><b>Đơn thuốc:</b></p>
+      <ul>${medicationsHtml}</ul>
       <div>Xin chân thành cảm ơn!</div>
     `;
   }
@@ -85,9 +110,9 @@ let getBodyHTMLEmailRemedy = (dataSend) => {
     result = `
       <h3>Dear ${patientName}!</h3>
       <p>You received this email because you booked an online medical appointment on HealthCare</p>
-      <p>Prescription/invoice information is sent in the attached file</p>
       <p><b>Diagnosis:</b> ${diagnosis}</p>
-
+      <p><b>Medications:</b></p>
+      <ul>${medicationsHtml}</ul>
       <div>Sincerely thank!</div>
     `;
   }
@@ -110,13 +135,6 @@ let sendAttachment = async (dataSend) => {
     to: dataSend.email,
     subject: "Kết quả đặt lịch khám bệnh",
     html: getBodyHTMLEmailRemedy(dataSend),
-    attachments: [
-      {
-        filename: `remedy-${dataSend.patientId}-${new Date().getTime()}.png`,
-        content: dataSend.prescription.split("base64,")[1],
-        encoding: "base64",
-      },
-    ],
   });
 };
 
@@ -142,6 +160,7 @@ let getBodyHTMLEmailConfirm = (dataSend) => {
   }
   return result;
 };
+
 let getBodyHTMLEmailOtp = (dataSend) => {
   let otp = encode(dataSend.otp);
   let patientName = encode(dataSend.patientName || "");
@@ -156,9 +175,8 @@ let getBodyHTMLEmailOtp = (dataSend) => {
   `;
   return result;
 };
-let sendOtpEmail = async (dataSend) => {
-  console.log("Data to send otp:", dataSend);
 
+let sendOtpEmail = async (dataSend) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -169,8 +187,7 @@ let sendOtpEmail = async (dataSend) => {
     },
   });
 
-  let html = dataSend.htmlContent || getBodyHTMLEmailOtp(dataSend); // ← Ưu tiên htmlContent
-  console.log("HTML email body being sent:\n", html);
+  let html = dataSend.htmlContent || getBodyHTMLEmailOtp(dataSend);
   let info = await transporter.sendMail({
     from: `"HealthCare OTP 👻" <${process.env.EMAIL_APP}>`,
     to: dataSend.receiverEmail,
@@ -180,7 +197,7 @@ let sendOtpEmail = async (dataSend) => {
 };
 
 module.exports = {
-  sendSimpleEmail: sendSimpleEmail,
-  sendAttachment: sendAttachment,
-  sendOtpEmail: sendOtpEmail,
+  sendSimpleEmail,
+  sendAttachment,
+  sendOtpEmail,
 };

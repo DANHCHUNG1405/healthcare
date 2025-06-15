@@ -17,13 +17,18 @@ module.exports = {
       diagnosis: {
         type: Sequelize.TEXT,
       },
-      prescription: {
-        type: Sequelize.TEXT,
+      medications: {
+        type: Sequelize.TEXT, // Lưu JSON.stringify(medications)
       },
       bookingId: {
         type: Sequelize.INTEGER,
+        references: {
+          model: "Bookings",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
-
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -34,6 +39,7 @@ module.exports = {
       },
     });
   },
+
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Histories");
   },

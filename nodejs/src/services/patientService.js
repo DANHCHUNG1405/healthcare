@@ -108,7 +108,7 @@ const postVerifyBookAppointment = async (data) => {
       where: {
         doctorId: data.doctorId,
         token: data.token,
-        statusId: "S1",
+        statusId: "S1", // Chưa xác nhận
       },
       raw: false,
     });
@@ -118,9 +118,24 @@ const postVerifyBookAppointment = async (data) => {
       appointment.statusId = "S2";
       await appointment.save();
 
+      // Tìm lịch tương ứng trong bảng Schedule
+      const schedule = await db.Schedule.findOne({
+        where: {
+          doctorId: appointment.doctorId,
+          date: appointment.date,
+          timeType: appointment.timeType,
+        },
+        raw: false,
+      });
+
+      // Nếu tồn tại, thì xoá lịch
+      if (schedule) {
+        await schedule.destroy();
+      }
+
       return {
         errCode: 0,
-        errMessage: "Verify booking success!",
+        errMessage: "Verify booking success and schedule deleted!",
       };
     } else {
       return {
@@ -136,27 +151,26 @@ const postVerifyBookAppointment = async (data) => {
     };
   }
 };
+
 let getBookingHistoryByEmail = async (email) => {
   try {
     if (!email) {
       return {
         errCode: 1,
-        errMessage: "Missing email parameter!",
+        errMessage: "Thiếu email!",
       };
     }
 
-    let user = await db.User.findOne({
-      where: { email },
-    });
+    const user = await db.User.findOne({ where: { email } });
 
     if (!user) {
       return {
         errCode: 2,
-        errMessage: "User not found!",
+        errMessage: "Không tìm thấy người dùng!",
       };
     }
 
-    let bookings = await db.Booking.findAll({
+    const bookings = await db.Booking.findAll({
       where: { patientId: String(user.id) },
       include: [
         {
@@ -171,27 +185,55 @@ let getBookingHistoryByEmail = async (email) => {
         },
         {
           model: db.History,
-          as: "remedyData", // alias này tùy bạn định nghĩa trong association
-          attributes: ["diagnosis", "prescription"],
+          as: "remedyData",
+          attributes: ["diagnosis", "medications"],
           required: false,
         },
       ],
       order: [["date", "DESC"]],
       raw: false,
+      nest: true,
+    });
+
+    // ✅ Parse medications an toàn
+    const parsedBookings = bookings.map((booking) => {
+      if (
+        booking?.remedyData &&
+        typeof booking.remedyData.medications === "string"
+      ) {
+        try {
+          booking.remedyData.medications = JSON.parse(
+            booking.remedyData.medications
+          );
+        } catch (e) {
+          console.warn(
+            `⚠️ Lỗi parse medications tại booking ID ${booking.id}:`,
+            e
+          );
+          booking.remedyData.medications = [];
+        }
+      } else if (
+        booking?.remedyData &&
+        !Array.isArray(booking.remedyData.medications)
+      ) {
+        booking.remedyData.medications = [];
+      }
+      return booking;
     });
 
     return {
       errCode: 0,
-      data: bookings,
+      data: parsedBookings,
     };
-  } catch (e) {
-    console.error("Error in getBookingHistoryByEmail:", e);
+  } catch (error) {
+    console.error("🔥 Lỗi trong getBookingHistoryByEmail:", error);
     return {
       errCode: -1,
-      errMessage: "Server error",
+      errMessage: "Lỗi server nội bộ!",
     };
   }
 };
+
 let sendOTPToEmail = async (email) => {
   if (!email) {
     return {

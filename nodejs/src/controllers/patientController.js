@@ -38,6 +38,7 @@ let getBookingHistoryByEmail = async (req, res) => {
     });
   }
 };
+
 let sendOTPToEmail = async (req, res) => {
   try {
     let { email } = req.body;

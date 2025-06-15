@@ -566,6 +566,12 @@ let sendRemedy = (data) => {
           appointment.statusId = "S3";
           await appointment.save();
         }
+
+        // 👉 Ensure medications is a string
+        if (typeof data.medications !== "string") {
+          data.medications = JSON.stringify(data.medications || []);
+        }
+
         await emailService.sendAttachment(data);
         resolve({
           errCode: 0,
