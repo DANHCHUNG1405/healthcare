@@ -85,6 +85,13 @@ let initWebRoutes = (app) => {
     historyController.getRemedyHistoryByEmail
   );
   router.post("/api/cancel-booking", patientController.cancelBooking);
+
+  router.put("/api/update-specialty", specialtyController.updateSpecialty);
+  router.delete("/api/delete-specialty", specialtyController.deleteSpecialty);
+
+
+  router.put("/api/update-clinic", clinicController.updateClinic); // ✅ Thêm
+  router.delete("/api/delete-clinic", clinicController.deleteClinic);
   return app.use("/", router);
 };
 module.exports = initWebRoutes;

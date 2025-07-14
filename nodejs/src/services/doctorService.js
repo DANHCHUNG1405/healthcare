@@ -242,7 +242,6 @@ const bulkCreateSchedule = (data) => {
 
       let schedule = data.arrSchedule;
 
-      // Gán maxNumber = 2 và currentNumber = 0, chuẩn hóa định dạng ngày
       if (schedule && schedule.length > 0) {
         schedule = schedule.map((item) => {
           if (!Date.parse(item.date)) {
@@ -254,12 +253,11 @@ const bulkCreateSchedule = (data) => {
             maxNumber: 1,
             currentNumber: 0,
             doctorId: data.doctorId,
-            date: new Date(item.date).toISOString().split("T")[0], // "YYYY-MM-DD"
+            date: new Date(item.date).toISOString().split("T")[0],
           };
         });
       }
 
-      // Lấy các lịch đã có để không tạo trùng
       let existing = await db.Schedule.findAll({
         where: {
           doctorId: data.doctorId,
@@ -269,13 +267,25 @@ const bulkCreateSchedule = (data) => {
         raw: true,
       });
 
-      // Lọc ra các lịch chưa có để tạo mới
       let toCreate = _.differenceWith(schedule, existing, (a, b) => {
         return a.timeType === b.timeType && a.date === b.date;
       });
 
       if (toCreate.length > 0) {
         await db.Schedule.bulkCreate(toCreate);
+      }
+
+      // 👉 xử lý xóa
+      if (data.arrToDelete && data.arrToDelete.length > 0) {
+        for (let item of data.arrToDelete) {
+          await db.Schedule.destroy({
+            where: {
+              doctorId: item.doctorId,
+              date: item.date,
+              timeType: item.timeType,
+            },
+          });
+        }
       }
 
       resolve({

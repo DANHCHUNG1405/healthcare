@@ -94,8 +94,76 @@ let getDetailClinicById = (inputId) => {
     }
   });
 };
+let updateClinic = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (
+        !data.id ||
+        !data.name ||
+        !data.descriptionHTML ||
+        !data.descriptionMarkdown ||
+        !data.address
+      ) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter!",
+        });
+      } else {
+        let clinic = await db.Clinic.findOne({
+          where: { id: data.id },
+          raw: false,
+        });
+        if (!clinic) {
+          resolve({
+            errCode: 2,
+            errMessage: "Clinic not found!",
+          });
+        } else {
+          clinic.name = data.name;
+          clinic.address = data.address;
+          clinic.descriptionHTML = data.descriptionHTML;
+          clinic.descriptionMarkdown = data.descriptionMarkdown;
+          if (data.imageBase64) {
+            clinic.image = data.imageBase64;
+          }
+          await clinic.save();
+          resolve({
+            errCode: 0,
+            errMessage: "Update successful!",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let deleteClinic = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let clinic = await db.Clinic.findOne({ where: { id }, raw: false });
+      if (!clinic) {
+        resolve({
+          errCode: 1,
+          errMessage: "Clinic not found!",
+        });
+      } else {
+        await db.Clinic.destroy({ where: { id } });
+        resolve({
+          errCode: 0,
+          errMessage: "Delete successful!",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 module.exports = {
   createClinic: createClinic,
   getAllClinic: getAllClinic,
   getDetailClinicById: getDetailClinicById,
+  updateClinic: updateClinic,
+  deleteClinic: deleteClinic,
 };
