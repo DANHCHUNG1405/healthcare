@@ -107,7 +107,9 @@ class RemedyModal extends Component {
 
             <div className="col-12">
               <label>
-                <strong>Đơn thuốc</strong>
+                <strong>
+                  <FormattedMessage id="doctor.modal.medication-title" />
+                </strong>
               </label>
               {medications.map((med, index) => (
                 <div
@@ -116,7 +118,9 @@ class RemedyModal extends Component {
                 >
                   <div className="form-row">
                     <div className="col-md-3 form-group">
-                      <label>Tên thuốc</label>
+                      <label>
+                        <FormattedMessage id="doctor.modal.medication-name" />
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -127,7 +131,9 @@ class RemedyModal extends Component {
                       />
                     </div>
                     <div className="col-md-3 form-group">
-                      <label>Liều dùng</label>
+                      <label>
+                        <FormattedMessage id="doctor.modal.medication-dose" />
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -138,7 +144,9 @@ class RemedyModal extends Component {
                       />
                     </div>
                     <div className="col-md-3 form-group">
-                      <label>Số lần/ngày</label>
+                      <label>
+                        <FormattedMessage id="doctor.modal.medication-frequency" />
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -149,7 +157,9 @@ class RemedyModal extends Component {
                       />
                     </div>
                     <div className="col-md-3 form-group">
-                      <label>Ghi chú</label>
+                      <label>
+                        <FormattedMessage id="doctor.modal.medication-note" />
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -165,7 +175,7 @@ class RemedyModal extends Component {
                       className="btn btn-danger btn-sm"
                       onClick={() => this.handleRemoveMedication(index)}
                     >
-                      Xóa thuốc
+                      <FormattedMessage id="doctor.modal.medication-remove" />
                     </button>
                   </div>
                 </div>
@@ -174,7 +184,7 @@ class RemedyModal extends Component {
                 className="btn btn-success mt-2"
                 onClick={this.handleAddMedication}
               >
-                + Thêm thuốc
+                + <FormattedMessage id="doctor.modal.medication-add" />
               </button>
             </div>
           </div>

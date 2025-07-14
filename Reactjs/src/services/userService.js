@@ -131,6 +131,23 @@ const cancelBookingById = (data) => {
   return axios.post("/api/cancel-booking", data);
 };
 
+const deleteSpecialty = (data) => {
+  return axios.delete("/api/delete-specialty", { data });
+};
+
+const updateSpecialty = (data) => {
+  return axios.put("/api/update-specialty", data);
+};
+
+const updateClinic = (data) => {
+  return axios.put("/api/update-clinic", data);
+};
+
+const deleteClinic = (clinicId) => {
+  return axios.delete("/api/delete-clinic", {
+    data: { id: clinicId },
+  });
+};
 export {
   handleLoginApi,
   getAllUsers,
@@ -162,4 +179,8 @@ export {
   verifyOtpCode,
   saveRemedy,
   cancelBookingById,
+  updateClinic,
+  deleteClinic,
+  deleteSpecialty,
+  updateSpecialty,
 };

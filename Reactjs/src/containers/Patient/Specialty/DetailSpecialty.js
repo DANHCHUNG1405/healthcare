@@ -19,8 +19,10 @@ class DetailSpecialty extends Component {
       arrDoctorId: [],
       dataDetailSpecialty: {},
       listProvince: [],
+      isShowMoreDescription: false,
     };
   }
+
   async componentDidMount() {
     if (
       this.props.match &&
@@ -67,16 +69,11 @@ class DetailSpecialty extends Component {
     }
   }
 
-  async componentDidUpdate(prevProps, preState, snapshot) {
+  async componentDidUpdate(prevProps, prevState) {
     if (this.props.language !== prevProps.language) {
+      // You can handle language-specific logic here
     }
   }
-
-  showHideDetailInfor = (status) => {
-    this.setState({
-      isShowDetailInfor: status,
-    });
-  };
 
   handleOnChangeSelect = async (event) => {
     if (
@@ -111,9 +108,22 @@ class DetailSpecialty extends Component {
       }
     }
   };
+
+  handleToggleDescription = () => {
+    this.setState((prevState) => ({
+      isShowMoreDescription: !prevState.isShowMoreDescription,
+    }));
+  };
+
   render() {
-    let { arrDoctorId, dataDetailSpecialty, listProvince } = this.state;
+    let {
+      arrDoctorId,
+      dataDetailSpecialty,
+      listProvince,
+      isShowMoreDescription,
+    } = this.state;
     let { language } = this.props;
+
     return (
       <>
         <div className="detail-specialty-container">
@@ -121,13 +131,28 @@ class DetailSpecialty extends Component {
           <div className="detail-specialty-body">
             <div className="description-specialty">
               {dataDetailSpecialty && !_.isEmpty(dataDetailSpecialty) && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: dataDetailSpecialty.descriptionHTML,
-                  }}
-                ></div>
+                <>
+                  <div
+                    className={
+                      isShowMoreDescription
+                        ? "description-content full"
+                        : "description-content short"
+                    }
+                    dangerouslySetInnerHTML={{
+                      __html: dataDetailSpecialty.descriptionHTML,
+                    }}
+                  ></div>
+
+                  <span
+                    className="toggle-description"
+                    onClick={this.handleToggleDescription}
+                  >
+                    {isShowMoreDescription ? "Ẩn bớt" : "Xem thêm"}
+                  </span>
+                </>
               )}
             </div>
+
             <div className="search-sp-doctor">
               <select onChange={(event) => this.handleOnChangeSelect(event)}>
                 {listProvince &&
@@ -143,6 +168,7 @@ class DetailSpecialty extends Component {
                   })}
               </select>
             </div>
+
             {arrDoctorId &&
               arrDoctorId.length > 0 &&
               arrDoctorId.map((item, index) => {
@@ -155,7 +181,6 @@ class DetailSpecialty extends Component {
                           isShowDescriptionDoctor={true}
                           isShowLinkDetail={true}
                           isShowPrice={false}
-                          // dataTime={dataTime}
                         />
                       </div>
                     </div>
@@ -183,8 +208,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(DetailSpecialty);
+export default connect(mapStateToProps)(DetailSpecialty);

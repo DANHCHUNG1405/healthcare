@@ -9,7 +9,10 @@ import DatePicker from "../../../components/Input/DatePicker";
 import moment from "moment";
 import { toast } from "react-toastify";
 import _ from "lodash";
-import { saveBulkScheduleDoctor } from "../../../services/userService";
+import {
+  saveBulkScheduleDoctor,
+  getScheduleDoctorByDate,
+} from "../../../services/userService";
 
 class ManageSchedule extends Component {
   constructor(props) {
@@ -55,6 +58,7 @@ class ManageSchedule extends Component {
         data = data.map((item) => ({
           ...item,
           isSelected: false,
+          isPreloaded: false,
         }));
       }
       this.setState({
@@ -62,6 +66,28 @@ class ManageSchedule extends Component {
       });
     }
   }
+
+  getDoctorScheduleForDate = async (doctorId, date) => {
+    try {
+      let formatedDate = moment(date).format("YYYY-MM-DD");
+      let res = await getScheduleDoctorByDate(doctorId, formatedDate);
+
+      if (res && res.errCode === 0) {
+        const existingTimeTypes = res.data.map((item) => item.timeType);
+        let updatedRangeTime = this.state.rangeTime.map((item) => {
+          let isPreloaded = existingTimeTypes.includes(item.keyMap);
+          return {
+            ...item,
+            isSelected: isPreloaded,
+            isPreloaded: isPreloaded,
+          };
+        });
+        this.setState({ rangeTime: updatedRangeTime });
+      }
+    } catch (error) {
+      console.error("Error fetching existing schedule", error);
+    }
+  };
 
   buildDataInputSelect = (inputData) => {
     let result = [];
@@ -88,24 +114,42 @@ class ManageSchedule extends Component {
   };
 
   handleChangeSelect = async (selectedOption) => {
-    this.setState({ selectedDoctor: selectedOption });
+    this.setState({ selectedDoctor: selectedOption }, () => {
+      if (this.state.currentDate) {
+        this.getDoctorScheduleForDate(
+          selectedOption.value,
+          this.state.currentDate
+        );
+      }
+    });
   };
 
   handleOnchangeDatePicker = (date) => {
-    this.setState({ currentDate: date[0] });
+    const selectedDate = Array.isArray(date) ? date[0] : date;
+    this.setState({ currentDate: selectedDate }, () => {
+      if (this.state.selectedDoctor && this.state.selectedDoctor.value) {
+        this.getDoctorScheduleForDate(
+          this.state.selectedDoctor.value,
+          selectedDate
+        );
+      }
+    });
   };
 
   handleClickBtnTime = (time) => {
     let { rangeTime } = this.state;
-    if (rangeTime && rangeTime.length > 0) {
-      rangeTime = rangeTime.map((item) => {
-        if (item.id === time.id) item.isSelected = !item.isSelected;
-        return item;
-      });
-      this.setState({
-        rangeTime: rangeTime,
-      });
-    }
+    rangeTime = rangeTime.map((item) => {
+      if (item.id === time.id) {
+        return {
+          ...item,
+          isSelected: !item.isSelected,
+        };
+      }
+      return item;
+    });
+    this.setState({
+      rangeTime,
+    });
   };
 
   handleSaveSchedule = async () => {
@@ -162,6 +206,8 @@ class ManageSchedule extends Component {
     let today = new Date();
     let tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
     return (
       <div className="manage-schedule-container">
         <div className="m-s-title">
@@ -205,11 +251,9 @@ class ManageSchedule extends Component {
                 rangeTime.map((item, index) => {
                   return (
                     <button
-                      className={
-                        item.isSelected === true
-                          ? "btn btn-schedule active"
-                          : "btn btn-schedule"
-                      }
+                      className={`btn btn-schedule ${
+                        item.isSelected ? "active" : ""
+                      } ${item.isPreloaded ? "preloaded" : ""}`}
                       key={index}
                       onClick={() => this.handleClickBtnTime(item)}
                     >

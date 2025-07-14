@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
-import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../utils";
+import {
+  LANGUAGES,
+  CRUD_ACTIONS,
+  CommonUtils,
+  USER_ROLE,
+} from "../../../utils";
 import * as actions from "../../../store/actions";
 import "./UserRedux.scss";
 import Lightbox from "react-image-lightbox";
@@ -15,7 +20,7 @@ class UserRedux extends Component {
       genderArr: [],
       roleArr: [],
       positionArr: [],
-      previewImageURL: "", // Đổi tên previewImgURL thành previewImageURL cho nhất quán
+      previewImageURL: "",
       isOpen: false,
       email: "",
       password: "",
@@ -23,11 +28,11 @@ class UserRedux extends Component {
       lastName: "",
       phoneNumber: "",
       address: "",
-      gender: "", // Giá trị ban đầu nên là rỗng
-      position: "", // Giá trị ban đầu nên là rỗng
-      role: "", // Giá trị ban đầu nên là rỗng
+      gender: "",
+      position: "",
+      role: "",
       avatar: "",
-      action: CRUD_ACTIONS.CREATE, // Đặt action mặc định là CREATE
+      action: CRUD_ACTIONS.CREATE,
       userEditId: "",
     };
   }
@@ -39,42 +44,33 @@ class UserRedux extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    // console.log("Current state:", this.state); // Debugging: Check current state
-    // console.log("Previous props:", prevProps); // Debugging: Check previous props
-    // console.log("Current props:", this.props); // Debugging: Check current props
-
-    // Cập nhật genderArr khi genderRedux thay đổi và đặt giá trị mặc định (rỗng)
     if (prevProps.genderRedux !== this.props.genderRedux) {
       let arrGenders = this.props.genderRedux;
       this.setState({
         genderArr: arrGenders,
-        gender: "", // Đặt giá trị ban đầu là rỗng
+        gender: "",
       });
     }
 
-    // Cập nhật roleArr khi roleRedux thay đổi và đặt giá trị mặc định (rỗng)
     if (prevProps.roleRedux !== this.props.roleRedux) {
       let arrRoles = this.props.roleRedux;
       this.setState({
         roleArr: arrRoles,
-        role: "", // Đặt giá trị ban đầu là rỗng
+        role: "",
       });
     }
 
-    // Cập nhật positionArr khi positionRedux thay đổi và đặt giá trị mặc định (rỗng)
     if (prevProps.positionRedux !== this.props.positionRedux) {
       let positionArr = this.props.positionRedux;
       this.setState({
         positionArr: positionArr,
-        position: "", // Đặt giá trị ban đầu là rỗng
+        position: "",
       });
     }
 
-    // Reset form khi danh sách người dùng thay đổi (ngụ ý thêm/sửa/xóa thành công)
-    // Hoặc khi chuyển từ edit sang create
     if (
       prevProps.listUsers !== this.props.listUsers &&
-      this.state.action === CRUD_ACTIONS.CREATE // Chỉ reset khi đang ở chế độ tạo mới
+      this.state.action === CRUD_ACTIONS.CREATE
     ) {
       this.setState({
         email: "",
@@ -83,12 +79,12 @@ class UserRedux extends Component {
         lastName: "",
         phoneNumber: "",
         address: "",
-        gender: "", // Reset về rỗng
-        position: "", // Reset về rỗng
-        role: "", // Reset về rỗng
+        gender: "",
+        position: "",
+        role: "",
         avatar: "",
         action: CRUD_ACTIONS.CREATE,
-        previewImageURL: "", // Đổi tên cho nhất quán
+        previewImageURL: "",
       });
     }
   }
@@ -100,14 +96,14 @@ class UserRedux extends Component {
       let base64 = await CommonUtils.getBase64(file);
       let objectUrl = URL.createObjectURL(file);
       this.setState({
-        previewImageURL: objectUrl, // Đổi tên cho nhất quán
+        previewImageURL: objectUrl,
         avatar: base64,
       });
     }
   };
 
   openPreviewImage = () => {
-    if (!this.state.previewImageURL) return; // Đổi tên cho nhất quán
+    if (!this.state.previewImageURL) return;
     this.setState({
       isOpen: true,
     });
@@ -119,8 +115,6 @@ class UserRedux extends Component {
 
     let { action } = this.state;
 
-    // Lấy giá trị email hiện tại trong trường hợp chỉnh sửa
-    // vì trường email bị disabled khi edit, nên nó không được cập nhật qua onChangeInput
     const currentEmail =
       this.state.action === CRUD_ACTIONS.EDIT
         ? this.state.email
@@ -128,7 +122,7 @@ class UserRedux extends Component {
 
     if (action === CRUD_ACTIONS.CREATE) {
       this.props.createNewUser({
-        email: currentEmail, // Sử dụng email hiện tại
+        email: currentEmail,
         password: this.state.password,
         firstName: this.state.firstName,
         lastName: this.state.lastName,
@@ -143,8 +137,7 @@ class UserRedux extends Component {
     if (action === CRUD_ACTIONS.EDIT) {
       this.props.editAUserRedux({
         id: this.state.userEditId,
-        email: currentEmail, // Sử dụng email hiện tại
-        // password: this.state.password, // Không gửi password khi edit trừ khi có trường đổi password riêng
+        email: currentEmail,
         firstName: this.state.firstName,
         lastName: this.state.lastName,
         address: this.state.address,
@@ -165,14 +158,17 @@ class UserRedux extends Component {
       "lastName",
       "phoneNumber",
       "address",
-      "gender", // Thêm vào để validate
-      "role", // Thêm vào để validate
-      "position", // Thêm vào để validate
+      "gender",
+      "role",
     ];
 
-    // Chỉ validate password khi tạo mới
     if (this.state.action === CRUD_ACTIONS.CREATE) {
-      arrCheck.splice(1, 0, "password"); // Chèn password vào vị trí thứ 2
+      arrCheck.splice(1, 0, "password");
+    }
+
+    // Chỉ validate position nếu role là bác sĩ
+    if (this.state.role === USER_ROLE.DOCTOR) {
+      arrCheck.push("position");
     }
 
     for (let i = 0; i < arrCheck.length; i++) {
@@ -188,6 +184,12 @@ class UserRedux extends Component {
   onChangeInput = (event, id) => {
     let copyState = { ...this.state };
     copyState[id] = event.target.value;
+
+    // Nếu thay đổi role và không phải là bác sĩ, reset position
+    if (id === "role" && event.target.value !== USER_ROLE.DOCTOR) {
+      copyState.position = "";
+    }
+
     this.setState({
       ...copyState,
     });
@@ -200,16 +202,16 @@ class UserRedux extends Component {
     }
     this.setState({
       email: user.email,
-      password: "HARDCODE", // Giữ lại HARDCODE hoặc để rỗng, không nên hiển thị password thật
+      password: "HARDCODE",
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       address: user.address,
-      gender: user.gender, // Giá trị keyMap của gender
-      position: user.positionId, // Giá trị keyMap của position
-      role: user.roleId, // Giá trị keyMap của role
-      avatar: "", // Không giữ avatar cũ trong state để tránh gửi lại image quá lớn
-      previewImageURL: imageBase64, // Ảnh preview
+      gender: user.gender,
+      position: user.positionId,
+      role: user.roleId,
+      avatar: "",
+      previewImageURL: imageBase64,
       action: CRUD_ACTIONS.EDIT,
       userEditId: user.id,
     });
@@ -343,7 +345,6 @@ class UserRedux extends Component {
                   }}
                   value={gender}
                 >
-                  {/* Option rỗng/placeholder */}
                   <option value="">
                     {language === LANGUAGES.VI
                       ? "Chọn giới tính"
@@ -354,8 +355,6 @@ class UserRedux extends Component {
                     genders.map((item, index) => {
                       return (
                         <option key={index} value={item.keyMap}>
-                          {" "}
-                          {/* Sửa từ item.key thành item.keyMap */}
                           {language === LANGUAGES.EN
                             ? item.valueEn
                             : item.valueVi}
@@ -364,36 +363,40 @@ class UserRedux extends Component {
                     })}
                 </select>
               </div>
-              <div className="col-3">
-                <label>
-                  <FormattedMessage id="manage-user.position" />
-                </label>
-                <select
-                  className="inputState form-control"
-                  onChange={(event) => {
-                    this.onChangeInput(event, "position");
-                  }}
-                  value={position}
-                >
-                  {/* Option rỗng/placeholder */}
-                  <option value="">
-                    {language === LANGUAGES.VI
-                      ? "Chọn chức danh"
-                      : "Select Position"}
-                  </option>
-                  {positions &&
-                    positions.length > 0 &&
-                    positions.map((item, index) => {
-                      return (
-                        <option key={index} value={item.keyMap}>
-                          {language === LANGUAGES.VI
-                            ? item.valueVi
-                            : item.valueEn}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
+
+              {/* Position field - chỉ hiển thị khi role là bác sĩ hoặc chưa chọn role */}
+              {(this.state.role === USER_ROLE.DOCTOR || !this.state.role) && (
+                <div className="col-3">
+                  <label>
+                    <FormattedMessage id="manage-user.position" />
+                  </label>
+                  <select
+                    className="inputState form-control"
+                    onChange={(event) => {
+                      this.onChangeInput(event, "position");
+                    }}
+                    value={position}
+                  >
+                    <option value="">
+                      {language === LANGUAGES.VI
+                        ? "Chọn chức danh"
+                        : "Select Position"}
+                    </option>
+                    {positions &&
+                      positions.length > 0 &&
+                      positions.map((item, index) => {
+                        return (
+                          <option key={index} value={item.keyMap}>
+                            {language === LANGUAGES.VI
+                              ? item.valueVi
+                              : item.valueEn}
+                          </option>
+                        );
+                      })}
+                  </select>
+                </div>
+              )}
+
               <div className="col-3">
                 <label>
                   <FormattedMessage id="manage-user.role" />
@@ -405,7 +408,6 @@ class UserRedux extends Component {
                   }}
                   value={role}
                 >
-                  {/* Option rỗng/placeholder */}
                   <option value="">
                     {language === LANGUAGES.VI ? "Chọn vai trò" : "Select Role"}
                   </option>
@@ -440,7 +442,7 @@ class UserRedux extends Component {
                   <div
                     className="preview-image"
                     style={{
-                      backgroundImage: `url(${this.state.previewImageURL})`, // Sửa tên state
+                      backgroundImage: `url(${this.state.previewImageURL})`,
                     }}
                     onClick={() => this.openPreviewImage()}
                   ></div>
@@ -473,7 +475,7 @@ class UserRedux extends Component {
         </div>
         {this.state.isOpen === true && (
           <Lightbox
-            mainSrc={this.state.previewImageURL} // Sửa tên state
+            mainSrc={this.state.previewImageURL}
             onCloseRequest={() => this.setState({ isOpen: false })}
           />
         )}

@@ -50,7 +50,7 @@
       "S4": "Đã hủy"
     },
     "cancelBooking": "Hủy lịch",
-    "cancelBooking": "Cancel booking",
+
     "confirmTitle": "Xác nhận hủy lịch khám",
     "confirmCancelMessage": "Bạn có chắc chắn muốn hủy lịch khám này không?",
     "cancel": "Không",
@@ -181,13 +181,32 @@
       "nameClinic": "Tên phòng khám",
       "addressClinic": "Địa chỉ phòng khám",
       "pictureClinic": "Ảnh phòng khám",
-      "save": "Lưu thông tin"
+      "save": "Lưu thông tin",
+      "nameColumn": "Tên",
+      "addressColumn": "Địa chỉ",
+      "actions": "Hành động",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "confirm-delete-title": "Xác nhận xóa phòng khám",
+      "confirm-delete-message": "Bạn có chắc chắn muốn xóa phòng khám này?",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
     },
+
     "manage-specialty": {
       "title": "Quản lý chuyên khoa",
       "nameSpecialty": "Tên chuyên khoa",
       "pictureSpecialty": "Ảnh chuyên khoa",
-      "save": "Lưu thông tin"
+      "save": "Lưu thông tin",
+      "update": "Cập nhật",
+      "listTitle": "Danh sách chuyên khoa",
+      "actions": "Hành động",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "confirmDeleteTitle": "Xác nhận xóa chuyên khoa",
+      "confirmDeleteMessage": "Bạn có chắc chắn muốn xóa chuyên khoa này không?",
+      "cancel": "Không",
+      "confirm": "Có"
     }
   },
   "doctor": {
@@ -209,7 +228,14 @@
       "prescription": "Chọn file đơn thuốc",
       "diagnosis": "Chẩn đoán",
       "send": "Gửi",
-      "cancel": "Hủy"
+      "cancel": "Hủy",
+      "medication-title": "Đơn thuốc",
+      "medication-name": "Tên thuốc",
+      "medication-dose": "Liều dùng",
+      "medication-frequency": "Số lần/ngày",
+      "medication-note": "Ghi chú",
+      "medication-add": "Thêm thuốc",
+      "medication-remove": "Xóa thuốc"
     }
   }
 }
